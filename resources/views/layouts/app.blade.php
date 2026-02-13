@@ -78,10 +78,6 @@
         <nav class="p-1 bg-dark text-white mb-3">
             <div class="container">
                 <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                    <!-- <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none mx-1 p-1">
-                        <img src="{{ asset('logo.png') }}" id="logo" style="width:60px;">
-                    </a> -->
-
                     <ul class="nav col-12 col-lg-auto me-lg-auto justify-content-center align-items-center p-2">
                         <li>
                             <img src="{{ asset(path: 'logo.png') }}" id="logo" style="width:50px;">
@@ -105,38 +101,34 @@
                         @if (Route::has('login'))
                         <a class="btn btn-warning me-2" href="{{ route('login') }}">{{ __('Login') }}</a>
                         @endif
+
                         @if (Route::has('register'))
                         <a class="btn btn-outline-light" href="{{ route('register') }}">{{ __('Register') }}</a>
                         @endif
                         @else
-                        <a class="btn btn-warning me-2">{{ Auth::user()->name }}</a>
-                        <!-- <a id="" class="btn btn-outline-light me-2" href="#" role="button"
+                        <div class="dropdown">
+                            <a id="navbarDropdown" class="btn btn-warning dropdown-toggle px-3" href="#" role="button"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            </a> -->
+                                {{ Auth::user()->name }}
+                            </a>
 
-                        <!-- <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown"> -->
-                        <!-- <button class="tn btn-outline-light me-2">
-                                <a class="tn btn-outline-light me-2" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                    document.getElementById('logout-form').submit();">
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="users/list">
+                                    {{ __('Users') }}
+                                </a>
+                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     {{ __('Logout') }}
                                 </a>
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
                                 </form>
-                            </button> -->
-                        <!-- </div> -->
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-light">
-                                {{ __('Logout') }}
-                            </button>
-                        </form>
-
+                            </div>
+                        </div>
                         @endguest
-                        <!-- <a class="btn btn-outline-light me-2" href="{{ route('login') }}">Login</a>
-                        <a class="btn btn-warning" href="{{ route('register') }}">Sign-up</a> -->
                     </div>
+
                 </div>
             </div>
         </nav>
