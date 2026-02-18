@@ -4,14 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HelloController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\WelcomeController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-// Route::get('/about', function(){
-//     return 'About page';
-// });
 
 Route::get('/about', function(){
     return view('about');
@@ -31,12 +25,15 @@ Route::get('/cart', function(){
 
 Route::get('/hello', [HelloController::class, 'show']);
 
+Route::get('/', [WelcomeController::class, 'index']);
+
 Route::get('/users/list', [UserController::class, 'index']) -> middleware('auth');
+
+Route::get('/products/show/{id}', [App\Http\Controllers\ProductController::class, 'show'])->name('products.show');
 
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
 
 
 

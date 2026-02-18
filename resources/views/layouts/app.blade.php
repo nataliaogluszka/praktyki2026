@@ -16,7 +16,15 @@
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @vite(['resources/sass/app.scss', 'resources/sass/app.scss', 'resources/js/app.js'])
+
+    <style>
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        transition: all 0.3s ease;
+    }
+    </style>
 </head>
 
 <body>
@@ -91,14 +99,13 @@
                         <li><a href="/about" class="nav-link px-2 text-white">About</a></li> -->
                     </ul>
 
-                    <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
-                        <input type="search" class="form-control form-control-dark" placeholder="{{ __('Szukaj...') }}"
-                            aria-label="Search">
+                    <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="{{ route('home') }}" method="GET">
+                        <input type="search" class="form-control form-control-dark" name="search"
+                            placeholder="{{ __('Szukaj...') }}" aria-label="Search">
                     </form>
 
                     <div class="text-end col-lg-auto mb-3 mb-lg-0 me-lg-3 d-flex align-items-center">
-                        <button type="button" onclick="window.location.href='/cart'"
-                            class="btn btn-outline-warning me-2">
+                        <button type="button" onclick="window.location.href='/cart'" class="btn btn-outline-info me-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-cart" viewBox="0 0 16 16">
                                 <path
@@ -157,6 +164,43 @@
         <main class="py-2">
             @yield('content')
         </main>
+
+        <footer class="bg-dark text-light pt-5 pb-4 mt-5">
+            <div class="container text-center text-md-start">
+                <div class="row text-center text-md-start">
+                    <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                        <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Nazwa Sklepu</h5>
+                        <p>Zapewniamy najwyższą jakość produktów sportowych od 2024 roku. Twoja pasja to nasza misja.
+                        </p>
+                    </div>
+
+                    <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                        <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Sklep</h5>
+                        <p><a href="/home" class="text-light text-decoration-none">Wszystkie produkty</a></p>
+                        <p><a href="#" class="text-light text-decoration-none">Promocje</a></p>
+                        <p><a href="#" class="text-light text-decoration-none">Nowości</a></p>
+                    </div>
+
+                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+                        <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Kontakt</h5>
+                        <p><i class="bi bi-house-door-fill me-2"></i> Łódź, Polska</p>
+                        <p><i class="bi bi-envelope-fill me-2"></i> kontakt@twojsklep.pl</p>
+                        <p><i class="bi bi-telephone-fill me-2"></i> +48 123 456 789</p>
+                    </div>
+                </div>
+
+                <hr class="mb-4">
+
+                <div class="row align-items-center">
+                    <div class="col-md-7 col-lg-8">
+                        <p>© 2026 Wszelkie prawa zastrzeżone: <strong>Twoja Marka</strong></p>
+                    </div>
+                    <div class="col-md-5 col-lg-4 text-center">
+                        <small class="text-muted">Metody płatności: Visa, Mastercard, Blik</small>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
 </body>
 

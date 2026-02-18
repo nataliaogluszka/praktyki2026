@@ -6,12 +6,12 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Email</th>
-                <th scope="col">Imię</th>
-                <th scope="col">Nazwisko</th>
-                <th scope="col">Rola</th>
-                <th scope="col">Akcje</th>
+                <th scope="col" class="col-1">#</th>
+                <th scope="col" class="col-3">Email</th>
+                <th scope="col" class="col-2">Imię</th>
+                <th scope="col" class="col-2">Nazwisko</th>
+                <th scope="col" class="col-2">Rola</th>
+                <th scope="col" class="col-2">Akcje</th>
             </tr>
         </thead>
         <tbody>
@@ -42,5 +42,8 @@
     </table>
 </div>
 
+<div class="container d-flex justify-content-center mt-4">
+    {{ $users->links() }}
+</div>
 
 @endsection

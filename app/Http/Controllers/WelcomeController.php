@@ -3,18 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 
-class UserController extends Controller
+class WelcomeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('users.index', [          
-            'users' => User::paginate(10)
-        ]);
+        $latestProducts = \App\Models\Product::latest()->take(4)->get();
+
+        return view('welcome', compact('latestProducts'));
     }
 
     /**
