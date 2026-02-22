@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class WelcomeController extends Controller
@@ -11,7 +12,7 @@ class WelcomeController extends Controller
      */
     public function index()
     {
-        $latestProducts = \App\Models\Product::latest()->take(4)->get();
+        $latestProducts = Product::latest()->take(4)->get();
 
         return view('welcome', compact('latestProducts'));
     }

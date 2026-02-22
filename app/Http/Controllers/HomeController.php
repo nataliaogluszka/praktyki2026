@@ -35,8 +35,16 @@ class HomeController extends Controller
     public function index(Request $request): View
     {
         $sort = $request->get('sort', 'newest');
+        $searchTerm = $request->query('search');
 
         $products = Product::query()
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                });
+            })
+
             ->when($sort == 'price_asc', function ($q) {
                 return $q->orderBy('price', 'asc');
             })

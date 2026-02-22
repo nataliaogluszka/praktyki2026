@@ -23,20 +23,24 @@
 </div>
 @endauth -->
 
-<div class="container mb-4">
-    <div class="d-flex justify-content-end">
-        <form action="{{ route('home') }}" method="GET" id="sortForm" class="d-flex align-items-center">
-            <label for="sort" class="me-2 mb-0">Sortuj według:</label>
-            <select name="sort" id="sort" class="form-select form-select-sm w-auto"
-                onchange="document.getElementById('sortForm').submit()">
-                <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Najnowsze</option>
-                <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Cena: rosnąco</option>
-                <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Cena: malejąco
-                </option>
-                <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Nazwa: A-Z</option>
-            </select>
-        </form>
-    </div>
+<div class="container mb-4 d-flex justify-content-between align-items-center">
+    <form action="{{ route('home') }}" method="GET" class="d-flex align-items-center m-0" id="searchForm">
+        <div class="input-group">
+        <input type="search" name="search" id="search" value="{{ request('search') }}" placeholder="Szukaj produktów..." class="form-control">
+        <button type="submit" class="btn btn-outline-primary">Szukaj</button>
+        </div>
+    </form>
+    <form action="{{ route('home') }}" method="GET" id="sortForm" class="d-flex align-items-center m-0">
+        <label for="sort" class="me-2 mb-0">Sortuj według:</label>
+        <select name="sort" id="sort" class="form-select form-select-sm w-auto"
+            onchange="document.getElementById('sortForm').submit()">
+            <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Najnowsze</option>
+            <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Cena: rosnąco</option>
+            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Cena: malejąco
+            </option>
+            <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Nazwa: A-Z</option>
+        </select>
+    </form>
 </div>
 
 <div class="container">
@@ -45,7 +49,7 @@
         <div class="col">
             <div class="card h-100 border-0 shadow-sm hover-shadow transition">
                 <div style="height: 250px; overflow: hidden;">
-                    <img src="{{ asset($product->image) }}" class="card-img-top img-fluid" alt="{{ $product->name }}"
+                    <img src="{{ asset('images/products/' . $product->image) }}" class="card-img-top img-fluid" alt="{{ $product->name }}"
                         style="object-fit: cover; height: 100%;">
                 </div>
 

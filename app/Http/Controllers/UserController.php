@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -13,7 +14,7 @@ class UserController extends Controller
     public function index()
     {
         return view('users.index', [          
-            'users' => User::paginate(10)
+            'users' => User::paginate(8)
         ]);
     }
 
@@ -44,24 +45,27 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function updateRole(Request $request, User $user)
     {
-        //
+        $request->validate([
+            'role' => 'required|in:user,admin',
+        ]);
+
+        $user->update(['role' => $request->role]);
+
+        return back()->with('success', 'Rola została zaktualizowana.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    // Usuwanie użytkownika
+    public function destroy(User $user)
     {
-        //
-    }
+        // Opcjonalnie: zabezpieczenie, aby admin nie usunął samego siebie
+        if (Auth::id() === $user->id) {
+            return back()->with('error', 'Nie możesz usunąć własnego konta!');
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $user->delete();
+
+        return back()->with('success', 'Użytkownik został usunięty.');
     }
 }

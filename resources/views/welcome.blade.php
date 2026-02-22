@@ -50,7 +50,7 @@
                     <span class="badge bg-danger px-3 py-2">NOWOŚĆ</span>
                 </div>
                 <div style="height: 200px; overflow: hidden;">
-                    <img src="{{ asset($product->image) }}" class="card-img-top" alt="{{ $product->name }}" style="object-fit: cover; height: 100%;">
+                    <img src="{{ asset('images/products/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}" style="object-fit: cover; height: 100%;">
                 </div>
                 <div class="card-body">
                     <h6 class="card-title fw-bold">{{ $product->name }}</h6>

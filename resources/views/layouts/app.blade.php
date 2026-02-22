@@ -24,6 +24,14 @@
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
         transition: all 0.3s ease;
     }
+
+    main {
+        min-height: 40vh;
+    }
+
+    .nav-item:hover>a {
+        color: #0DCAF0 !important;
+    }
     </style>
 </head>
 
@@ -83,7 +91,7 @@
     </div>
     </nav> -->
 
-        <nav class="p-1 bg-dark text-white mb-3">
+        <!-- <nav class="p-1 bg-dark text-white mb-3">
             <div class="container">
                 <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                     <ul class="nav col-12 col-lg-auto me-lg-auto justify-content-center align-items-center p-2">
@@ -95,77 +103,186 @@
                         </li>
                         <li><a href="#" class="nav-link px-2 text-white">{{ __('Kategorie') }}</a></li>
                         <li><a href="#" class="nav-link px-2 text-white">{{ __('Promocje') }}</a></li>
-                        <!-- <li><a href="/contact" class="nav-link px-2 text-white">Contact</a></li>
-                        <li><a href="/about" class="nav-link px-2 text-white">About</a></li> -->
+
                     </ul>
 
-                    <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="{{ route('home') }}" method="GET">
-                        <input type="search" class="form-control form-control-dark" name="search"
-                            placeholder="{{ __('Szukaj...') }}" aria-label="Search">
-                    </form>
-
-                    <div class="text-end col-lg-auto mb-3 mb-lg-0 me-lg-3 d-flex align-items-center">
-                        <button type="button" onclick="window.location.href='/cart'" class="btn btn-outline-info me-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-cart" viewBox="0 0 16 16">
-                                <path
-                                    d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2">
-                                </path>
-                            </svg>
-                            Koszyk
-                        </button>
+                    <ul class="nav text-end col-lg-auto mb-3 mb-lg-0 me-lg-3 d-flex align-items-center">
+                        <li>
+                            <button type="button" onclick="window.location.href='/cart'"
+                                class="btn btn-outline-secondary me-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-bell-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901">
+                                    </path>
+                                </svg>
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" onclick="window.location.href='/cart'"
+                                class="btn btn-outline-info me-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-basket-fill mb-1 me-1" viewBox="0 0 16 16">
+                                    <path
+                                        d="M5.071 1.243a.5.5 0 0 1 .858.514L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H15v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9H.5a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 .5 6h1.717zM3.5 10.5a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0z" />
+                                </svg>
+                                Koszyk
+                            </button>
+                        </li>
 
                         @guest
-                        @if (Route::has('login'))
-                        <a class="btn btn-warning me-2" href="{{ route('login') }}">{{ __('Zaloguj') }}</a>
-                        @endif
-
-                        @if (Route::has('register'))
-                        <a class="btn btn-outline-light" href="{{ route('register') }}">{{ __('Zarejestruj') }}</a>
-                        @endif
-                        @else
-                        <div class="dropdown">
-                            <a id="navbarDropdown" class="btn btn-warning dropdown-toggle px-3" href="#" role="button"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                {{ Auth::user()->name }}
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="users/list">
-                                    {{ __('Użytkownicy') }}
-                                </a>
-                                <a class="dropdown-item" href="orders/list">
-                                    <!-- To do -->
-                                    {{ __('Historia zamówień') }}
-                                </a>
-                                <a class="dropdown-item" href="">
-                                    {{ __('Zwroty') }}
-                                </a>
-                                <a class="dropdown-item" href="">
-                                    {{ __('Zapisane adresy') }}
-                                </a>
-                                <a class="dropdown-item" href="{{ route('logout') }}"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    {{ __('Wyloguj') }}
+                        <li>
+                            @if (Route::has('login'))
+                            <a class="btn btn-warning me-2" href="{{ route('login') }}">{{ __('Zaloguj') }}</a>
+                            @endif
+                        </li>
+                        <li>
+                            @if (Route::has('register'))
+                            <a class="btn btn-outline-light" href="{{ route('register') }}">{{ __('Zarejestruj') }}</a>
+                            @endif
+                        </li>
+                        <li>
+                            @else
+                            <div class="dropdown">
+                                <a id="navbarDropdown" class="btn btn-warning dropdown-toggle px-3" href="#"
+                                    role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                    v-pre>
+                                    {{ Auth::user()->name }}
                                 </a>
 
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ url('users/list') }}">
+                                        {{ __('Użytkownicy') }}
+                                    </a>
+                                    <a class="dropdown-item" href="orders/list">
+                                        
+                                        {{ __('Historia zamówień') }}
+                                    </a>
+                                    <a class="dropdown-item" href="">
+                                        {{ __('Zwroty') }}
+                                    </a>
+                                    <a class="dropdown-item" href="">
+                                        {{ __('Zapisane adresy') }}
+                                    </a>
+                                    <a class="dropdown-item text-danger" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        {{ __('Wyloguj') }}
+                                    </a>
+
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
+                                </div>
                             </div>
-                        </div>
+                        </li>
                         @endguest
-                    </div>
+                    </ul>
 
                 </div>
             </div>
+        </nav> -->
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="/">
+                    <img src="{{ asset(path: 'logo.png') }}" id="logo" style="width:50px;" class="me-2">
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-bold">
+                        <li class="nav-item">
+                            <a href="{{ route('home') }}"
+                                class="nav-link px-3 {{ request()->routeIs('home') ? 'text-secondary active' : 'text-white' }}">
+                                {{ __('Produkty') }}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('categories') }}"
+                                class="nav-link px-3 {{ request()->routeIs('categories') ? 'text-secondary active' : 'text-white' }}">
+                                {{ __('Kategorie') }}
+                            </a>
+                        </li>
+                        <!-- <li class="nav-item">
+                            <a href="/promotions" class="nav-link px-3 text-white">{{ __('Promocje') }}</a>
+                        </li> -->
+                    </ul>
+
+                    <div class="d-flex align-items-center gap-2">
+
+                        <a href="/cart" class="btn btn-outline-info border-0 fw-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                class="bi bi-basket-fill me-2 mb-1" viewBox="0 0 16 16">
+                                <path
+                                    d="M5.071 1.243a.5.5 0 0 1 .858.514L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H15v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9H.5a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 .5 6h1.717zM3.5 10.5a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0z" />
+                            </svg>
+                            {{ __('Koszyk') }}
+                        </a>
+
+                        @guest
+                        @if (Route::has('login'))
+                        <a class="btn btn-warning fw-bold px-4" href="{{ route('login') }}">{{ __('Zaloguj') }}</a>
+                        @endif
+                        @if (Route::has('register'))
+                        <a class="btn btn-outline-light border-1"
+                            href="{{ route('register') }}">{{ __('Zarejestruj') }}</a>
+                        @endif
+                        @else
+                        <div class="dropdown">
+                            <button class="btn btn-warning dropdown-toggle fw-bold px-4 text-dark" type="button"
+                                id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ Auth::user()->name }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                                @can('isAdmin')
+                                    <li><a class="dropdown-item" href="/users/list">Użytkownicy</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('products.index') }}">Produkty</a></li>
+                                @endcan
+                                <!-- <li><a class="dropdown-item" href="{{ url('users/list') }}">{{ __('Użytkownicy') }}</a>
+                                </li>
+                                <li><a class="dropdown-item" href="{{ url("products/list") }}">{{ __('Produkty') }}</a></li> -->
+                                <li><a class="dropdown-item" href="orders/list">{{ __('Historia zamówień') }}</a></li>
+                                <li><a class="dropdown-item" href="returns/list">{{ __('Zwroty') }}</a></li>
+                                <li><a class="dropdown-item" href="addresses/list">{{ __('Zapisane adresy') }}</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        {{ __('Wyloguj') }}
+                                    </a>
+                                    
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="/" class="btn btn-outline-light">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                class="bi bi-bell-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901">
+                                </path>
+                            </svg>
+                        </a>
+                        @endguest
+
+                    </div>
+                </div>
+            </div>
         </nav>
+        <div class="py-5"></div>
 
         <main class="py-2">
             @yield('content')
         </main>
 
-        <footer class="bg-dark text-light pt-5 pb-4 mt-5">
+        <footer class="bg-dark text-light pt-5 pb-4 mt-3">
             <div class="container text-center text-md-start">
                 <div class="row text-center text-md-start">
                     <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
@@ -177,7 +294,7 @@
                     <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
                         <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Sklep</h5>
                         <p><a href="/home" class="text-light text-decoration-none">Wszystkie produkty</a></p>
-                        <p><a href="#" class="text-light text-decoration-none">Promocje</a></p>
+                        <p><a href="/" class="text-light text-decoration-none">Promocje</a></p>
                         <p><a href="#" class="text-light text-decoration-none">Nowości</a></p>
                     </div>
 

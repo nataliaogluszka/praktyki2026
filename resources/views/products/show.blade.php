@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm">
-                <img src="{{ asset($product->image) }}" class="img-fluid rounded" alt="{{ $product->name }}">
+                <img src="{{ asset('images/products/' . $product->image) }}" class="img-fluid rounded" alt="{{ $product->name }}">
             </div>
         </div>
 
@@ -13,10 +13,9 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/home">Sklep</a></li>
-                    <!-- <li class="breadcrumb-item active" aria-current="page">Kategoria - uzupełnić!!!!!</li> -->
                     @if($product->category)
                     <li class="breadcrumb-item">
-                        <a href="{{ route('home', ['category' => $product->category_id]) }}">
+                        <a href="{{ route('categories.show', ['name' => $product->category->name]) }}">
                             {{ $product->category->name }}
                         </a>
                     </li>
@@ -51,4 +50,5 @@
         </div>
     </div>
 </div>
+
 @endsection

@@ -24,17 +24,45 @@
                 <td>{{ $user-> role }}</td>
                 <td class="d-flex align-items-center">
 
-                    <div class="dropdown me-2">
+                    <!-- <div class="dropdown me-2">
                         <button class="btn btn-sm btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">Zmień rolę
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">User</a></li>
-                            <li><a class="dropdown-item" href="#">Admin</a></li>
+                            <li><a class="dropdown-item" href="#">user</a></li>
+                            <li><a class="dropdown-item" href="#">admin</a></li>
+                        </ul>
+                    </div> -->
+                    <div class="dropdown me-2">
+                        <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Zmień rolę
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <form action="{{ route('users.updateRole', $user->id) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="role" value="user">
+                                    <button type="submit" class="dropdown-item">User</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{{ route('users.updateRole', $user->id) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="role" value="admin">
+                                    <button type="submit" class="dropdown-item">Admin</button>
+                                </form>
+                            </li>
                         </ul>
                     </div>
 
-                    <button class="btn btn-sm btn-danger">Usuń</button>
+                    <form action="{{ route('users.destroy', $user->id) }}" method="POST"
+                        onsubmit="return confirm('Czy na pewno chcesz usunąć tego użytkownika?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-outline-danger">x</button>
+                    </form>
                 </td>
             </tr>
             @endforeach
