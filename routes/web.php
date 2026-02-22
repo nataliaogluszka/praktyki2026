@@ -8,6 +8,7 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CartController;
 
 
 Route::get('/about', function(){
@@ -68,8 +69,13 @@ Route::delete('/products/{product}', [ProductController::class, 'destroy'])->nam
 Route::post('/products', [ProductController::class, 'store'])->name('products.store');
 
 
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
 
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 
+Route::delete('/cart/remove/{id}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+
+Route::patch('/cart/update/{id}', [App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
 
 
 

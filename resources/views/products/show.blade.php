@@ -5,7 +5,8 @@
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm">
-                <img src="{{ asset('images/products/' . $product->image) }}" class="img-fluid rounded" alt="{{ $product->name }}">
+                <img src="{{ asset('images/products/' . $product->image) }}" class="img-fluid rounded"
+                    alt="{{ $product->name }}">
             </div>
         </div>
 
@@ -36,13 +37,22 @@
             <hr class="my-4">
 
             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                <button class="btn btn-primary btn-lg px-4 me-md-2" type="button">
-                    <i class="bi bi-cart-plus"></i> Dodaj do koszyka
-                </button>
+                <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                    @csrf
+                    <button class="btn btn-primary btn-lg px-4 me-md-2" type="submit">
+                        <i class="bi bi-cart-plus"></i> Dodaj do koszyka
+                    </button>
+                </form>
                 <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-lg px-4">
                     Powrót
                 </a>
             </div>
+
+            @if(session('success'))
+            <div class="alert alert-success mt-3">
+                {{ session('success') }}
+            </div>
+            @endif
 
             <div class="mt-4">
                 <small class="text-muted">ID Produktu: #{{ $product->id }}</small>

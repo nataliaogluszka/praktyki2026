@@ -32,6 +32,29 @@
     .nav-item:hover>a {
         color: #0DCAF0 !important;
     }
+
+    .btn-minus-custom {
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        border-right: none !important;
+    }
+
+    .btn-plus-custom {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-left: none !important;
+    }
+
+    .cart-input-custom {
+        border-radius: 0 !important;
+        max-width: 45px;
+        padding: 0;
+        z-index: 0 !important; 
+    }
+
+    .input-group form {
+        display: flex;
+    }
     </style>
 </head>
 
@@ -182,17 +205,18 @@
             </div>
         </nav> -->
 
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="/">
-                    <img src="{{ asset(path: 'logo.png') }}" id="logo" style="width:50px;" class="me-2">
+                    <img src="{{ asset(path: 'logo.png') }}" id="logo" style="width:50px;" class="mx-2">
                 </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <button class="navbar-toggler btn border-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-bold">
                         <li class="nav-item">
                             <a href="{{ route('home') }}"
@@ -206,12 +230,9 @@
                                 {{ __('Kategorie') }}
                             </a>
                         </li>
-                        <!-- <li class="nav-item">
-                            <a href="/promotions" class="nav-link px-3 text-white">{{ __('Promocje') }}</a>
-                        </li> -->
                     </ul>
 
-                    <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex w-100 justify-content-md-end justify-content-end align-items-center gap-2 py-2 py-md-0">
 
                         <a href="/cart" class="btn btn-outline-info border-0 fw-bold">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
@@ -241,9 +262,6 @@
                                     <li><a class="dropdown-item" href="/users/list">Użytkownicy</a></li>
                                     <li><a class="dropdown-item" href="{{ route('products.index') }}">Produkty</a></li>
                                 @endcan
-                                <!-- <li><a class="dropdown-item" href="{{ url('users/list') }}">{{ __('Użytkownicy') }}</a>
-                                </li>
-                                <li><a class="dropdown-item" href="{{ url("products/list") }}">{{ __('Produkty') }}</a></li> -->
                                 <li><a class="dropdown-item" href="orders/list">{{ __('Historia zamówień') }}</a></li>
                                 <li><a class="dropdown-item" href="returns/list">{{ __('Zwroty') }}</a></li>
                                 <li><a class="dropdown-item" href="addresses/list">{{ __('Zapisane adresy') }}</a></li>
@@ -272,6 +290,88 @@
                         </a>
                         @endguest
 
+                    </div>
+                </div> -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <div class="row w-100 m-0 pt-3 pt-md-0">
+
+                        <div class="col-3 col-md-auto p-0">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-bold">
+                                <li class="nav-item">
+                                    <a href="{{ route('home') }}"
+                                        class="nav-link px-0 px-md-3 {{ request()->routeIs('home') ? 'text-secondary active' : 'text-white' }}">
+                                        {{ __('Produkty') }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('categories') }}"
+                                        class="nav-link px-0 px-md-3 {{ request()->routeIs('categories') ? 'text-secondary active' : 'text-white' }}">
+                                        {{ __('Kategorie') }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div
+                            class="col-9 col-md d-flex flex-row justify-content-end align-items-end align-items-md-center gap-2 p-0">
+
+                            <a href="/cart" class="btn btn-outline-info border-0 fw-bold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                    class="bi bi-basket-fill me-2 mb-1" viewBox="0 0 16 16">
+                                    <path
+                                        d="M5.071 1.243a.5.5 0 0 1 .858.514L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H15v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9H.5a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 .5 6h1.717zM3.5 10.5a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0zm2.5 0a.5.5 0 1 0-1 0v3a.5.5 0 0 0 1 0z" />
+                                </svg>
+                                {{ __('Koszyk') }}
+                            </a>
+
+                            @guest
+                            @if (Route::has('login'))
+                            <a class="btn btn-warning fw-bold px-4" href="{{ route('login') }}">{{ __('Zaloguj') }}</a>
+                            @endif
+                            @if (Route::has('register'))
+                            <a class="btn btn-outline-light border-1"
+                                href="{{ route('register') }}">{{ __('Zarejestruj') }}</a>
+                            @endif
+                            @else
+                            <div class="dropdown">
+                                <button class="btn btn-warning dropdown-toggle fw-bold px-4 text-dark" type="button"
+                                    id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {{ Auth::user()->name }}
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                                    @can('isAdmin')
+                                    <li><a class="dropdown-item" href="/users/list">Użytkownicy</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('products.index') }}">Produkty</a></li>
+                                    @endcan
+                                    <li><a class="dropdown-item" href="orders/list">{{ __('Historia zamówień') }}</a>
+                                    </li>
+                                    <li><a class="dropdown-item" href="returns/list">{{ __('Zwroty') }}</a></li>
+                                    <li><a class="dropdown-item" href="addresses/list">{{ __('Zapisane adresy') }}</a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="{{ route('logout') }}"
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            {{ __('Wyloguj') }}
+                                        </a>
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                            class="d-none">@csrf</form>
+                                    </li>
+                                </ul>
+                            </div>
+                            <a href="/" class="btn btn-outline-light">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                    class="bi bi-bell-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901">
+                                    </path>
+                                </svg>
+                            </a>
+                            @endguest
+
+                        </div>
                     </div>
                 </div>
             </div>
