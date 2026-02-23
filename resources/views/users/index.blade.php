@@ -43,7 +43,7 @@
                                     @csrf
                                     @method('PATCH')
                                     <input type="hidden" name="role" value="user">
-                                    <button type="submit" class="dropdown-item">User</button>
+                                    <button type="submit" class="dropdown-item">user</button>
                                 </form>
                             </li>
                             <li>
@@ -51,7 +51,15 @@
                                     @csrf
                                     @method('PATCH')
                                     <input type="hidden" name="role" value="admin">
-                                    <button type="submit" class="dropdown-item">Admin</button>
+                                    <button type="submit" class="dropdown-item">admin</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{{ route('users.updateRole', $user->id) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="role" value="inventory">
+                                    <button type="submit" class="dropdown-item">inventory</button>
                                 </form>
                             </li>
                         </ul>

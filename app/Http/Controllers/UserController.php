@@ -37,9 +37,12 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        //
+        $user = Auth::user();
+        return view('users.profile', [
+            'user' => $user
+        ]);
     }
 
     /**
@@ -48,7 +51,7 @@ class UserController extends Controller
     public function updateRole(Request $request, User $user)
     {
         $request->validate([
-            'role' => 'required|in:user,admin',
+            'role' => 'required|in:user,admin,inventory',
         ]);
 
         $user->update(['role' => $request->role]);

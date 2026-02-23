@@ -5,12 +5,12 @@
     <div class="row">
         <div class="col-md-6">
             <div class="p-2">
-            <img src="{{ asset('images/products/' . $product->image) }}" alt="{{ $product->name }}"
-                style="width: 100%; height: auto; object-fit: cover; border-radius: 8px;">
+                <img src="{{ asset('images/products/' . $product->image) }}" alt="{{ $product->name }}"
+                    style="width: 100%; height: auto; object-fit: cover; border-radius: 8px;">
             </div>
         </div>
         <div class="col-md-6">
-            <form action="{{ route('products.update', $product) }}" method="POST"  enctype="multipart/form-data">
+            <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -22,17 +22,29 @@
 
                 <div class="mb-3">
                     <label class="form-label">Cena</label>
-                    <input type="text" name="price" class="form-control" value="{{ $product->price }}">
+                    <input type="number" name="price" class="form-control" value="{{ $product->price }}" step="0.01">
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Kategoria</label>
                     <select name="category_id" class="form-select">
-                        @foreach($categories as $category)
-                        <option value="{{ $category->id }}"
-                            {{ $product->category_id == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
+                        @foreach($categories as $mainCat)
+                        <option value="{{ $mainCat->id }}" disabled style="font-weight: bold; background-color: #eee;">
+                            {{ $mainCat->name }} (Główna)
                         </option>
+
+                        @foreach($mainCat->children as $subCat)
+                        <option value="{{ $subCat->id }}" disabled style="padding-left: 20px; font-style: italic;">
+                            -- {{ $subCat->name }}
+                        </option>
+
+                        @foreach($subCat->children as $leafCat)
+                        <option value="{{ $leafCat->id }}" {{ $product->category_id == $leafCat->id ? 'selected' : '' }}
+                            style="padding-left: 40px;">
+                            &nbsp;&nbsp;&nbsp;&nbsp; {{ $leafCat->name }}
+                        </option>
+                        @endforeach
+                        @endforeach
                         @endforeach
                     </select>
                 </div>
@@ -51,6 +63,18 @@
                 <button type="submit" class="btn btn-primary mb-3">Zapisz zmiany</button>
                 <a href="{{ route('products.index') }}" class="btn btn-secondary mb-3">Anuluj</a>
             </form>
+
+
+            @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
         </div>
     </div>
+</div>
     @endsection

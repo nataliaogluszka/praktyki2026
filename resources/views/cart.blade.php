@@ -16,7 +16,12 @@
     <div class="row">
         <div class="col-lg-8">
             <h4 class="mb-4 fw-bold">Twój koszyk ({{ count($cart) }})</h4>
-
+            
+    @if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
             @forelse($cart as $id => $item)
             <div class="card cart-card mb-3">
                 <div class="card-body">
@@ -91,21 +96,18 @@
                         <span class="text-muted small">W tym podatek VAT (23%)</span>
                         <span class="small text-secondary">{{ number_format($taxAmount, 2, ',', ' ') }} zł</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span class="text-muted">Dostawa</span>
-                        <span class="text-success">Darmowa</span>
-                    </div>
                     <hr>
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fw-bold">Do zapłaty</span>
                         <span class="price-tag fs-3">{{ number_format($total, 2, ',', ' ') }} zł</span>
                     </div>
-                    <button class="btn btn-primary-custom w-100 fw-bold">KUPUJĘ I PŁACĘ</button>
+                    <a href="{{ route('checkout.index') }}" class="btn btn-primary-custom w-100 fw-bold">KUPUJĘ I PŁACĘ</a>
                     <a href="/home" class="btn btn-link w-100 text-decoration-none mt-2 text-muted small">Kontynuuj
                         zakupy</a>
                 </div>
             </div>
         </div>
+        
     </div>
 </div>
 @endsection

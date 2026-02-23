@@ -32,6 +32,27 @@
         </div>
     </div>
     @endforeach
+
+    <ul>
+    @foreach ($categories as $category)
+        <li>
+            <strong>{{ $category->name }}</strong> @if($category->children->count() > 0)
+                <ul>
+                    @foreach ($category->children as $subCategory)
+                        <li>
+                            {{ $subCategory->name }} @if($subCategory->children->count() > 0)
+                                <ul>
+                                    @foreach ($subCategory->children as $child)
+                                        <li>{{ $child->name }}</li> @endforeach
+                                </ul>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </li>
+    @endforeach
+</ul>
 </div>
 
 @endsection

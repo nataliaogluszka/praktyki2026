@@ -7,6 +7,11 @@
             <div class="card shadow-sm">
                 <img src="{{ asset('images/products/' . $product->image) }}" class="img-fluid rounded"
                     alt="{{ $product->name }}">
+                @if($product->inventory && $product->inventory->quantity > 0)
+                <span class="badge bg-success position-absolute top-0 end-0 m-2">Dostępny</span>
+                @else
+                <span class="badge bg-danger position-absolute top-0 end-0 m-2">Brak</span>
+                @endif
             </div>
         </div>
 
@@ -40,7 +45,7 @@
                 <form action="{{ route('cart.add', $product->id) }}" method="POST">
                     @csrf
                     <button class="btn btn-primary btn-lg px-4 me-md-2" type="submit">
-                        <i class="bi bi-cart-plus"></i> Dodaj do koszyka
+                        Dodaj do koszyka
                     </button>
                 </form>
                 <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-lg px-4">

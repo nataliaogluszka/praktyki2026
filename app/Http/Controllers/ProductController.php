@@ -7,14 +7,16 @@ use Illuminate\Http\RedirectResponse;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Inventory;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
         return view('products.index', [          
-            'products' => Product::paginate(8),
-            'categories' => Category::all()
+            'products' => Product::with('category')->paginate(8), // Dodałem eager loading kategorii
+            // Pobieramy tylko główne kategorie z ich dziećmi
+            'categories' => Category::whereNull('parent_id')->with('children.children')->get()
         ]);
     }
     
@@ -22,10 +24,9 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
-
-    return view('products.show', [
-        'product' => $product
-    ]);
+        return view('products.show', [
+            'product' => $product
+        ]);
     }
 
     public function destroy(Product $product)
@@ -36,9 +37,12 @@ class ProductController extends Controller
         return back()->with('success', 'Produkt został usunięty.');
     }
 
+
+
     public function edit(Product $product)
     {
-        $categories = Category::all(); // Pobieramy wszystkie kategorie do selecta
+        // Pobieramy drzewo kategorii (3 poziomy)
+        $categories = Category::whereNull('parent_id')->with('children.children')->get();
         return view('products.edit', compact('product', 'categories'));
     }
 
@@ -49,7 +53,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -85,7 +89,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -100,7 +104,12 @@ class ProductController extends Controller
             $data['image'] = 'default.jpg'; // Domyślny obrazek
         }
 
-        Product::create($data);
+        $product = Product::create($data); 
+
+        Inventory::create([
+            'product_id' => $product->id,
+            'quantity' => 0,
+        ]);
 
         return back()->with('success', 'Produkt został dodany pomyślnie!');
     }

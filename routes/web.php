@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HelloController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\WelcomeController;
@@ -9,6 +8,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\InventoryController;
 
 
 Route::get('/about', function(){
@@ -19,29 +20,11 @@ Route::get('/contact', function(){
     return view('contact');
 });
 
-Route::get('/cart', function(){
-    return view('cart');
-});
-
-// Route::get('/login', function(){
-//     return view('login');
-// });
-
-Route::get('/hello', [HelloController::class, 'show']);
-
 Route::get('/', [WelcomeController::class, 'index']);
-
-Route::get('/products/show/{id}', [ProductController::class, 'show'])->name('products.show');
-
-Route::get('/categories/show/{name}', [CategoryController::class, 'show'])->name('categories.show');
 
 Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories');
-
-
 
 
 Route::get('/users/list', [UserController::class, 'index']) -> middleware('auth') -> middleware('can:isAdmin');
@@ -51,6 +34,8 @@ Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name(
 
 // Trasa do usuwania użytkownika
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+Route::get('/profile', [UserController::class, 'show'])->name('users.profile') -> middleware('auth');
 
 
 
@@ -68,8 +53,39 @@ Route::delete('/products/{product}', [ProductController::class, 'destroy'])->nam
 // Trasa do zapisu nowego produktu
 Route::post('/products', [ProductController::class, 'store'])->name('products.store');
 
+Route::get('/products/show/{id}', [ProductController::class, 'show'])->name('products.show');
 
-Route::get('/cart', [CartController::class, 'index'])->name('cart');
+
+
+
+Route::get('/categories/list', [CategoryController::class, 'index'])->name('categories.index') -> middleware('auth') -> middleware('can:isAdmin');
+
+Route::post('/categories', [CategoryController::class, 'store'])
+    ->name('categories.store')
+    ->middleware(['auth', 'can:isAdmin']);
+
+Route::get('/categories/show/{name}', [CategoryController::class, 'show'])->name('categories.show');
+
+Route::get('/categories/{gender}', [CategoryController::class, 'genderIndex'])->name('categories.gender');
+
+Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])
+    ->name('categories.destroy')
+    ->middleware(['auth', 'can:isAdmin']);
+
+Route::patch('/inventory/update', [InventoryController::class, 'update'])->name('inventory.update');
+
+
+
+
+// Route::get('/cart', function(){
+//     return view('cart');
+// });
+
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 
@@ -79,7 +95,9 @@ Route::patch('/cart/update/{id}', [App\Http\Controllers\CartController::class, '
 
 
 
+Route::get('/inventories/list', [InventoryController::class, 'index'])->name('inventories.index') -> middleware('auth') -> middleware('can:isInventory');
 
+Route::patch('/inventories/update', [InventoryController::class, 'update'])->name('inventory.update');
 
 
 
