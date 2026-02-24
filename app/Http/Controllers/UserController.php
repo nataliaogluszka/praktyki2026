@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -40,8 +41,15 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user = Auth::user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        
+        $latestOrders = $user->orders()->latest()->take(3)->get();
+
         return view('users.profile', [
-            'user' => $user
+            'user' => $user,
+            'addresses' => $user->addresses,
+            'orders' => $latestOrders
         ]);
     }
 

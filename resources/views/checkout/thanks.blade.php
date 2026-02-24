@@ -20,7 +20,9 @@
             <hr class="my-4">
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
                 <a href="/home" class="btn btn-primary-custom px-4 fw-bold">Wróć do sklepu</a>
+                @auth
                 <a href="/orders" class="btn btn-outline-secondary px-4">Twoje zamówienia</a>
+                @endauth
             </div>
         </div>
     </div>

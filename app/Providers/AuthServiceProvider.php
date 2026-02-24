@@ -31,6 +31,12 @@ class AuthServiceProvider extends ServiceProvider
         $this->defineUserRoleGate('isAdmin',UserRole::ADMIN);
         $this->defineUserRoleGate('isUser',UserRole::USER);
         $this->defineUserRoleGate('isInventory',UserRole::INVENTORY);
+
+        Gate::before(function ($user, $ability) {
+            if ($user->role === UserRole::ADMIN) {
+                return true;
+            }
+        });
     }
 
     private function defineUserRoleGate(string $name, string $role): void

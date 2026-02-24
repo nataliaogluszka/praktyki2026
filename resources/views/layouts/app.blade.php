@@ -65,7 +65,7 @@
         <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="/">
-                    <img src="{{ asset(path: 'logo.png') }}" id="logo" style="width:50px;" class="mx-2">
+                    <img src="{{ asset(path: 'logo.png') }}" id="logo" style="width:40px;" class="mx-2">
                 </a>
 
                 <button class="navbar-toggler btn border-0" type="button" data-bs-toggle="collapse"
@@ -121,12 +121,8 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" href="{{ route('users.profile') }}">{{ __('Mój profil') }}</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('orders.show', Auth::user()) }}">{{ __('Moje zamówienia') }}</a></li>
                                     
-                                    <!-- <li><a class="dropdown-item" href="orders/list">{{ __('Historia zamówień') }}</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="returns/list">{{ __('Zwroty') }}</a></li>
-                                    <li><a class="dropdown-item" href="addresses/list">{{ __('Zapisane adresy') }}</a>
-                                    </li> -->
                                     @can('isAdmin')
                                     <li>
                                         <hr class="dropdown-divider">
@@ -134,6 +130,7 @@
                                     <li><a class="dropdown-item" href="/users/list">Użytkownicy</a></li>
                                     <li><a class="dropdown-item" href="{{ route('products.index') }}">Produkty</a></li>
                                     <li><a class="dropdown-item" href="{{ route('categories.index') }}">Kategorie</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('coupons.index') }}">Kody rabatowe</a></li>
                                     @endcan
 
                                     @can('isInventory')

@@ -10,6 +10,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CouponController;
 
 
 Route::get('/about', function(){
@@ -89,9 +91,21 @@ Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.s
 
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 
-Route::delete('/cart/remove/{id}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
-Route::patch('/cart/update/{id}', [App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
+Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+
+Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon');
+
+Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
+
+Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
+
+Route::delete('/coupons/{coupon}', [CouponController::class, 'destroy'])->name('coupons.destroy');
+
+Route::post('/coupons', [CouponController::class, 'store'])->name('coupons.store');
+
+Route::put('/coupons/{coupon}', [CouponController::class, 'update'])->name('coupons.update');
 
 
 
@@ -102,6 +116,7 @@ Route::patch('/inventories/update', [InventoryController::class, 'update'])->nam
 
 
 
+Route::get('/orders/{user}', [OrderController::class, 'show'])->name('orders.show') -> middleware('auth');
 
 
 

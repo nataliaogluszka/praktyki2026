@@ -4,24 +4,72 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Coupon;
 
 class CartController extends Controller
 {
+    // public function index()
+    // {
+    //     $cart = session()->get('cart', []);
+    //     $total = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
+
+    //     $vatRate = 0.23;
+    //     $taxAmount = $total - ($total / (1 + $vatRate));
+
+    //     return view('cart', compact('cart', 'total', 'taxAmount'));
+    // }
+
     public function index()
     {
         $cart = session()->get('cart', []);
         $total = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
+        
+        // Pobieramy kupon z sesji
+        $coupon = session()->get('coupon');
+        $discount = 0;
 
+        if ($coupon) {
+            if ($coupon['type'] === 'percent') {
+                $discount = $total * ($coupon['value'] / 100);
+            } else {
+                $discount = $coupon['value'];
+            }
+        }
+
+        $totalAfterDiscount = max(0, $total - $discount); // Cena nie może być ujemna
+        
         $vatRate = 0.23;
-        $taxAmount = $total - ($total / (1 + $vatRate));
+        $taxAmount = $totalAfterDiscount - ($totalAfterDiscount / (1 + $vatRate));
 
-        return view('cart', compact('cart', 'total', 'taxAmount'));
+        return view('cart', compact('cart', 'total', 'discount', 'totalAfterDiscount', 'taxAmount'));
     }
 
+    public function removeCoupon()
+    {
+        session()->forget('coupon');
+        return redirect()->back()->with('success', 'Kod rabatowy został usunięty.');
+    }
     
     public function show(string $name)
     {
         //
+    }
+
+    public function applyCoupon(Request $request)
+    {
+        $coupon = Coupon::where('code', $request->code)->first();
+
+        if (!$coupon) {
+            return redirect()->back()->with('error', 'Nieprawidłowy kod rabatowy.');
+        }
+
+        session()->put('coupon', [
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'value' => $coupon->value
+        ]);
+
+        return redirect()->back()->with('success', 'Kupon został naliczony!');
     }
 
     public function add(Request $request, $id)

@@ -16,12 +16,12 @@
     <div class="row">
         <div class="col-lg-8">
             <h4 class="mb-4 fw-bold">Twój koszyk ({{ count($cart) }})</h4>
-            
-    @if(session('error'))
-    <div class="alert alert-danger">
-        {{ session('error') }}
-    </div>
-@endif
+
+            @if(session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+            @endif
             @forelse($cart as $id => $item)
             <div class="card cart-card mb-3">
                 <div class="card-body">
@@ -83,13 +83,33 @@
             @endforelse
         </div>
 
-        <div class="col-lg-4">
+        <!-- <div class="col-lg-4">
             <div class="card cart-card">
                 <div class="card-body">
                     <h5 class="fw-bold mb-4">Podsumowanie</h5>
+                    <div class="mb-4 input-group">
+                        <form action="{{ route('cart.coupon') }}" method="POST" class="d-flex justify-content-between">
+                            @csrf
+                            <input type="text" class="form-control" name="code" placeholder="Wpisz kod rabatowy"
+                                required>
+                            <button type="submit" class="btn btn-dark">Zastosuj</button>
+                        </form>
+                    </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">Wartość produktów (brutto)</span>
                         <span>{{ number_format($total, 2, ',', ' ') }} zł</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        @if(session()->has('coupon'))
+                        <span>Zniżka:</span>
+                        <span> -{{ number_format($discount, 2) }} zł
+                            <form action="{{ route('cart.coupon.remove') }}" method="POST" class="mb-0">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger border-0">X</button>
+                            </form>
+                        </span>
+                        @endif
                     </div>
 
                     <div class="d-flex justify-content-between mb-2">
@@ -99,15 +119,66 @@
                     <hr>
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fw-bold">Do zapłaty</span>
-                        <span class="price-tag fs-3">{{ number_format($total, 2, ',', ' ') }} zł</span>
+                        <span class="price-tag fs-3">{{ number_format($totalAfterDiscount, 2, ',', ' ') }} zł</span>
                     </div>
-                    <a href="{{ route('checkout.index') }}" class="btn btn-primary-custom w-100 fw-bold">KUPUJĘ I PŁACĘ</a>
+                    <a href="{{ route('checkout.index') }}" class="btn btn-primary-custom w-100 fw-bold">KUPUJĘ I
+                        PŁACĘ</a>
                     <a href="/home" class="btn btn-link w-100 text-decoration-none mt-2 text-muted small">Kontynuuj
                         zakupy</a>
                 </div>
             </div>
+        </div> -->
+
+        <div class="col-lg-4">
+    <div class="card cart-card">
+        <div class="card-body">
+            <h5 class="fw-bold mb-4">Podsumowanie</h5>
+
+            <div class="mb-4">
+                <form action="{{ route('cart.coupon') }}" method="POST" class="input-group">
+                    @csrf
+                    <input type="text" class="form-control" name="code" placeholder="Wpisz kod rabatowy">
+                    <button type="submit" class="btn btn-dark">Zastosuj</button>
+                </form>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Wartość produktów (brutto)</span>
+                <span>{{ number_format($total, 2, ',', ' ') }} zł</span>
+            </div>
+
+            @if(session()->has('coupon'))
+                <div class="d-flex justify-content-between mb-2 text-success align-items-center">
+                    <span>Zniżka:</span>
+                    <div class="d-flex align-items-center">
+                        <span class="me-1">-{{ number_format($discount, 2, ',', ' ') }} zł</span>
+                        <form action="{{ route('cart.coupon.remove') }}" method="POST" class="m-0">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm text-danger p-0 border-0" style="line-height: 1;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endif
+
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">W tym podatek VAT (23%)</span>
+                <span class="small text-secondary">{{ number_format($taxAmount, 2, ',', ' ') }} zł</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-4">
+                <span class="fw-bold">Do zapłaty</span>
+                <span class="price-tag fs-3 text-nowrap">{{ number_format($totalAfterDiscount, 2, ',', ' ') }} zł</span>
+            </div>
+            <a href="{{ route('checkout.index') }}" class="btn btn-primary-custom w-100 fw-bold">KUPUJĘ I PŁACĘ</a>
+            <a href="/home" class="btn btn-link w-100 text-decoration-none mt-2 text-muted small">Kontynuuj zakupy</a>
         </div>
-        
+    </div>
+</div>
     </div>
 </div>
 @endsection
