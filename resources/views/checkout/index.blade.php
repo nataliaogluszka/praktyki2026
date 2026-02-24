@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    .address-card-selectable { cursor: pointer; transition: all 0.2s; }
+    .address-card-selectable:hover { border-color: #0d6efd !important; }
+    .address-card-selectable.active { border-color: #0d6efd !important; background-color: #f8f9ff; }
+</style>
+
 <div class="container">
     <div class="row">
         <div class="col-lg-8">
@@ -18,7 +24,7 @@
             <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
                 @csrf
 
-                <div class="card cart-card mb-4">
+                <div class="card shadow-sm cart-card mb-4">
                     <div class="card-body">
                         <h5 class="fw-bold mb-3 small-caps">Dane kontaktowe</h5>
                         <div class="row g-3">
@@ -45,32 +51,59 @@
                     </div>
                 </div>
 
-                <div class="card cart-card mb-4">
+                @auth
+            @if($addresses->count() > 0)
+            <div class="mb-4">
+                <h5 class="fw-bold mb-3 text-secondary text-uppercase mx-2" style="font-size: 0.85rem; letter-spacing: 1px;">
+                    Zapisane Adresy (kliknij, aby wybrać)
+                </h5>
+                <div class="row g-3">
+                    @foreach ($addresses as $address)
+                    <div class="col-md-6">
+                        <div class="card border-1 shadow-sm address-card-selectable h-100" 
+                             onclick="fillAddress(this)"
+                             data-street="{{ $address->street }}"
+                             data-number="{{ $address->house_number }}"
+                             data-postcode="{{ $address->postal_code }}"
+                             data-city="{{ $address->city }}">
+                            <div class="card-body p-3">
+                                <p class="mb-0 fw-bold">{{ $address->street }} {{ $address->house_number }}</p>
+                                <p class="text-muted mb-0 small">{{ $address->postal_code }} {{ $address->city }}</p>
+                                <p class="text-muted mb-0 small text-uppercase" style="font-size: 0.7rem;">{{ $address->country }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+            @endauth
+
+                <div class="card cart-card mb-4 shadow-sm">
                     <div class="card-body">
                         <h5 class="fw-bold mb-3 small-caps">Adres dostawy</h5>
                         <div class="row g-3">
                             <div class="col-8">
                                 <label class="form-label small text-muted">Ulica</label>
-                                <input type="text" name="shipping_street" class="form-control bg-light" required>
+                                <input type="text" name="shipping_street" id="shipping_street" class="form-control bg-light" required>
                             </div>
                             <div class="col-4">
                                 <label class="form-label small text-muted">Numer</label>
-                                <input type="text" name="shipping_number" class="form-control bg-light" required>
+                                <input type="text" name="shipping_number" id="shipping_number" class="form-control bg-light" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small text-muted">Kod pocztowy</label>
-                                <input type="text" name="shipping_postcode" class="form-control bg-light" required>
+                                <input type="text" name="shipping_postcode" id="shipping_postcode" class="form-control bg-light" required>
                             </div>
                             <div class="col-md-8">
                                 <label class="form-label small text-muted">Miasto</label>
-                                <input type="text" name="shipping_city" class="form-control bg-light" required>
+                                <input type="text" name="shipping_city" id="shipping_city" class="form-control bg-light" required>
                             </div>
 
                             @auth
                             <div class="col-12 mt-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="save_address"
-                                        id="save_address">
+                                    <input class="form-check-input" type="checkbox" name="save_address" id="save_address">
                                     <label class="form-check-label small" for="save_address">
                                         Zapisz ten adres w moich ustawieniach
                                     </label>
@@ -80,8 +113,9 @@
                         </div>
                     </div>
                 </div>
+                
 
-                <div class="card cart-card mb-4">
+                <div class="card cart-card mb-4 shadow-sm">
                     <div class="card-body">
                         <h5 class="fw-bold mb-3 small-caps">Metoda dostawy</h5>
                         <div class="list-group list-group-flush">
@@ -113,7 +147,7 @@
                     </div>
                 </div>
 
-                <div class="card cart-card mb-4">
+                <div class="card cart-card mb-4 shadow-sm">
                     <div class="card-body">
                         <h5 class="fw-bold mb-3 small-caps">Metoda płatności</h5>
                         <div class="form-check mb-2">
@@ -131,7 +165,7 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card cart-card">
+            <div class="card cart-card shadow-sm">
                 <div class="card-body">
                     <h5 class="fw-bold mb-4">Podsumowanie</h5>
                     <div class="d-flex justify-content-between mb-2">
@@ -158,18 +192,24 @@
 </div>
 
 <script>
-// Prosty skrypt do aktualizacji sumy "na żywo" przy wyborze dostawy
+function fillAddress(element) {
+    document.querySelectorAll('.address-card-selectable').forEach(card => card.classList.remove('active'));
+    element.classList.add('active');
+
+    document.getElementById('shipping_street').value = element.dataset.street;
+    document.getElementById('shipping_number').value = element.dataset.number;
+    document.getElementById('shipping_postcode').value = element.dataset.postcode;
+    document.getElementById('shipping_city').value = element.dataset.city;
+}
+
 document.querySelectorAll('input[name="shipping_method"]').forEach(radio => {
     radio.addEventListener('change', function() {
         const shippingCost = parseFloat(this.dataset.cost);
-        // const baseTotal = {{ $total }};
         const baseTotal = $total;
         const grandTotal = baseTotal + shippingCost;
 
-        document.getElementById('shipping-cost-display').innerText = shippingCost.toFixed(2).replace(
-            '.', ',') + ' zł';
-        document.getElementById('grand-total-display').innerText = grandTotal.toFixed(2).replace('.',
-            ',') + ' zł';
+        document.getElementById('shipping-cost-display').innerText = shippingCost.toFixed(2).replace('.', ',') + ' zł';
+        document.getElementById('grand-total-display').innerText = grandTotal.toFixed(2).replace('.', ',') + ' zł';
     });
 });
 </script>

@@ -44,7 +44,7 @@ class UserController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        $latestOrders = $user->orders()->latest()->take(3)->get();
+        $latestOrders = $user->orders()->latest()->take(5)->get();
 
         return view('users.profile', [
             'user' => $user,

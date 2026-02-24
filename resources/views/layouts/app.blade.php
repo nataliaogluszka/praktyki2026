@@ -120,8 +120,8 @@
                                     {{ Auth::user()->name }}
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" href="{{ route('users.profile') }}">{{ __('Mój profil') }}</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('orders.show', Auth::user()) }}">{{ __('Moje zamówienia') }}</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('users.profile') }}">Mój profil</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('orders.user.index', Auth::user()) }}">Moje zamówienia</a></li>
                                     
                                     @can('isAdmin')
                                     <li>
@@ -137,6 +137,7 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
+                                    <li><a class="dropdown-item" href="{{ route('orders.index') }}">Zamówienia</a></li>
                                     <li><a class="dropdown-item" href="{{ route('inventories.index') }}">Magazyn</a></li>
                                     @endcan
 

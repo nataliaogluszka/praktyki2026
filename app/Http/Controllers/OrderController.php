@@ -11,11 +11,39 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    // Metoda wyświetlająca listę
+    public function index(Request $request)
     {
-        return view('orders.index', [          
-            'orders' => Order::paginate(8)
+        $query = Order::query();
+
+        // Filtrowanie po statusie
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Sortowanie
+        if ($request->sort === 'oldest') {
+            $query->orderBy('created_at', 'asc');
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $orders = $query->paginate(10);
+
+        return view('orders.index', compact('orders'));
+    }
+
+    // Metoda aktualizująca status
+    public function update(Request $request, Order $order)
+    {
+        
+        $request->validate([
+            'status' => 'required|in:w przygotowaniu,wysłano',
         ]);
+
+        $order->update(['status' => $request->status]);
+        
+        return back()->with('success', 'Status zaktualizowany!');
     }
 
     /**
@@ -37,13 +65,13 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show()
+    public function userIndex()
     {
          /** @var \App\Models\User $user */
         $user = Auth::user();
-        $orders = $user->orders()->get();
+        $orders = Order::where('user_id', Auth::id())->paginate(5);
 
-        return view('orders.show', [
+        return view('orders.user.index', [
             'orders' => $orders
         ]);
     }

@@ -12,6 +12,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\ProfileController;
 
 
 Route::get('/about', function(){
@@ -39,7 +40,18 @@ Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.
 
 Route::get('/profile', [UserController::class, 'show'])->name('users.profile') -> middleware('auth');
 
+Route::middleware(['auth'])->group(function () {
+    // Widok profilu
+    // Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    
+    // Aktualizacja danych użytkownika
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    
+    // Dodawanie nowego adresu
+    Route::post('/addresses', [ProfileController::class, 'storeAddress'])->name('addresses.store');
 
+    Route::delete('/addresses/{address}', [ProfileController::class, 'destroyAddress'])->name('addresses.destroy');
+});
 
 
 Route::get('/products/list', [ProductController::class, 'index']) -> name('products.index') -> middleware('auth') -> middleware('can:isAdmin');
@@ -116,9 +128,11 @@ Route::patch('/inventories/update', [InventoryController::class, 'update'])->nam
 
 
 
-Route::get('/orders/{user}', [OrderController::class, 'show'])->name('orders.show') -> middleware('auth');
+Route::get('/orders', [OrderController::class, 'userIndex'])->name('orders.user.index') -> middleware('auth');
 
+Route::get('/orders/admin', [OrderController::class, 'index'])->name('orders.index') -> middleware('auth') -> middleware('can:isInventory');
 
+Route::patch('/orders/{order}/status', [OrderController::class, 'update'])->name('orders.update');
 
 
 
