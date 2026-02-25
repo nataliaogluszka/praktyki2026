@@ -3,6 +3,46 @@
 @section('content')
 
 <div class="container p-2">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0 text-secondary text-uppercase" style="font-size: 0.85rem; letter-spacing: 1px;">
+            Stan magazynu
+        </h4>
+
+        <form action="{{ route('inventories.index') }}" method="GET" class="d-flex gap-2 col-md-4">
+            <select name="status" class="form-select form-select-sm shadow-sm">
+                <option value="">Wszystkie produkty</option>
+                <option value="brak" {{ request('status') == 'brak' ? 'selected' : '' }}>
+                    Brak w magazynie
+                </option>
+                <option value="ponizej20" {{ request('status') == 'ponizej20' ? 'selected' : '' }}>
+                    Poniżej 20 szt.
+                </option>
+                <option value="ponizej50" {{ request('status') == 'ponizej50' ? 'selected' : '' }}>
+                    Poniżej 50 szt.
+                </option>
+                <option value="powyzej50" {{ request('status') == 'powyzej50' ? 'selected' : '' }}>
+                    Powyżej 50 szt.
+                </option>
+            </select>
+
+            <select name="sort" class="form-select form-select-sm shadow-sm">
+                <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>
+                    Najnowsze
+                </option>
+                <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>
+                    Najstarsze
+                </option>
+                <option value="majniej" {{ request('sort') == 'majniej' ? 'selected' : '' }}>
+                    Najmniejsza ilość
+                </option>
+                <option value="najwiecej" {{ request('sort') == 'najwiecej' ? 'selected' : '' }}>
+                    Największa ilość
+                </option>
+            </select>
+
+            <button type="submit" class="btn btn-sm btn-primary shadow-sm px-3">Filtruj</button>
+        </form>
+    </div>
     <table class="table table-hover">
         <thead>
             <tr>

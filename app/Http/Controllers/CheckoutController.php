@@ -5,112 +5,114 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\ShippingMethod;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class CheckoutController extends Controller{
-
-public function index()
+class CheckoutController extends Controller
 {
-    $cart = session()->get('cart', []);
-    if(empty($cart)) return redirect()->route('cart.index');
+    public function index()
+    {
+        $cart = session()->get('cart', []);
+        if (empty($cart)) return redirect()->route('cart.index');
 
-    // Podstawowa suma koszyka
-    $cartTotal = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
-    
-    // Logika rabatu
-    $coupon = session()->get('coupon');
-    $discount = 0;
+        $shippingMethods = ShippingMethod::all();
+        $cartTotal = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
+        
+        $coupon = session()->get('coupon');
+        $discount = 0;
 
-    if ($coupon) {
-        if ($coupon['type'] === 'percent') {
-            $discount = $cartTotal * ($coupon['value'] / 100);
-        } else {
-            $discount = $coupon['value'];
+        if ($coupon) {
+            $discount = ($coupon['type'] === 'percent') 
+                ? $cartTotal * ($coupon['value'] / 100) 
+                : $coupon['value'];
         }
+
+        $total = max(0, $cartTotal - $discount);
+        $addresses = Auth::check() ? Auth::user()->addresses : collect();
+
+        return view('checkout.index', compact('cart', 'total', 'discount', 'addresses', 'shippingMethods'));
     }
 
-    $total = max(0, $cartTotal - $discount); // Suma po rabacie (bez dostawy)
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|min:9|max:20',
 
-    $addresses = Auth::check() 
-        ? Auth::user()->addresses 
-        : collect();
+            'shipping_street' => 'required|string|max:255',
+            'shipping_number' => 'required|string|max:20',
+            'shipping_postcode' => 'required|string|max:10',
+            'shipping_city' => 'required|string|max:255',
 
-    return view('checkout.index', compact('cart', 'total', 'discount', 'addresses'));
-}
-
-public function store(Request $request)
-{
-    // ... (1. Walidacja pozostaje bez zmian)
-    $request->validate([/* Twoje reguły */]);
-
-    $cart = session()->get('cart', []);
-    if (empty($cart)) return redirect()->route('cart.index');
-
-    // 2. Koszty dostawy
-    $shippingRates = [
-        'paczkomat' => 15.00,
-        'kurier_inpost' => 19.00,
-        'dhl' => 22.00
-    ];
-    $shippingCost = $shippingRates[$request->shipping_method] ?? 15.00;
-    
-    // Obliczenie sumy koszyka
-    $cartTotal = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
-
-    // --- NOWA LOGIKA RABATOWA ---
-    $coupon = session()->get('coupon');
-    $discountAmount = 0;
-
-    if ($coupon) {
-        if ($coupon['type'] === 'percent') {
-            $discountAmount = $cartTotal * ($coupon['value'] / 100);
-        } else {
-            $discountAmount = $coupon['value'];
-        }
-    }
-
-    // Finalna cena: (Suma produktów - Rabat) + Dostawa
-    $finalTotal = max(0, $cartTotal - $discountAmount) + $shippingCost;
-    // ----------------------------
-
-    DB::beginTransaction();
-    try {
-        // 3. Tworzenie Zamówienia
-        $order = Order::create([
-            'user_id' => Auth::id(),
-            'total_price' => $finalTotal,
-            'tax_amount' => $finalTotal * 0.23 / 1.23,
-            'shipping_method' => $request->shipping_method,
-            'status' => 'przyjęte',
-            'is_paid' => false,
-            'is_completed' => false,
-            'shipping_address' => "{$request->name} {$request->surname}\n{$request->shipping_street}\n{$request->shipping_postcode} {$request->shipping_city}\nTel: {$request->phone}",
-            'billing_address' => "{$request->name} {$request->surname}\n{$request->shipping_street}\n{$request->shipping_postcode} {$request->shipping_city}",
-            // Opcjonalnie: możesz dodać kolumnę 'discount_amount' do tabeli orders, jeśli ją masz
-            // 'discount_amount' => $discountAmount, 
+            'shipping_method_id' => 'required|exists:shipping_methods,id',
+            'payment_method' => 'required|in:online,cod',
         ]);
 
-        // ... (4. Reszta kodu: Zapis adresu, Magazyn i OrderItem pozostaje bez zmian)
+        $shippingMethod = ShippingMethod::findOrFail($request->shipping_method_id);
+        $vatRateSetting = Setting::where('key', 'vat_rate')->first();
+        $vatRate = $vatRateSetting ? (float)$vatRateSetting->value : 23.0;
 
-        DB::commit();
+        $cart = session()->get('cart', []);
+        $cartTotal = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
         
-        // Czyścimy koszyk I kupon po udanym zamówieniu
-        session()->forget(['cart', 'coupon']);
+        $coupon = session()->get('coupon');
+        $discountAmount = 0;
+        if ($coupon) {
+            $discountAmount = ($coupon['type'] === 'percent') 
+                ? $cartTotal * ($coupon['value'] / 100) 
+                : $coupon['value'];
+        }
 
-        return view('checkout.thanks', compact('order'));
+        $finalTotal = max(0, $cartTotal - $discountAmount) + $shippingMethod->price;
+        $taxAmount = $finalTotal * ($vatRate / (100 + $vatRate));
 
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return redirect()->route('cart.index')->with('error', $e->getMessage());
+        DB::beginTransaction();
+        try {
+            $address = $this->formatAddress($request);
+
+            $order = Order::create([
+                'user_id'            => Auth::id(),
+                'total_price'        => $finalTotal,
+                'tax_amount'         => $taxAmount,
+                'shipping_method_id' => $shippingMethod->id, 
+                'shipping_method'    => $shippingMethod->name,
+                'status'             => 'przyjęte',
+                'is_paid'            => false,
+                'is_completed'       => false,
+                'shipping_address'   => $address,
+                'billing_address'    => $address,
+            ]);
+
+            foreach ($cart as $id => $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $id,
+                    'product_name' => $item['name'],
+                    'quantity' => $item['quantity'],
+                    'unit_price_gross' => $item['price'],
+                    'tax_rate' => 23.00,
+                ]);
+            }
+
+            DB::commit();
+            session()->forget(['cart', 'coupon']);
+            return view('checkout.thanks', compact('order'));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Błąd podczas składania zamówienia: ' . $e->getMessage());
+        }
     }
-}
 
-    /**
-     * Pomocnicza funkcja do formatowania adresu w jeden ciąg tekstowy
-     */
     private function formatAddress($request)
     {
-        return "{$request->shipping_name}\n{$request->shipping_street}\n{$request->shipping_postcode} {$request->shipping_city}\nTel: {$request->phone}";
+        return "{$request->name} {$request->surname}\n" .
+               "{$request->shipping_street} {$request->shipping_number}\n" .
+               "{$request->shipping_postcode} {$request->shipping_city}\n" .
+               "Tel: {$request->phone}";
     }
 }

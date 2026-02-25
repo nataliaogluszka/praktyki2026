@@ -17,6 +17,7 @@ class Order extends Model
         'status',
         'is_paid',
         'is_completed',
+        'shipping_method_id',
         'shipping_date',
         'shipping_method',
         'tracking_number',
@@ -74,7 +75,10 @@ class Order extends Model
         });
     }
 
-
+    public function shippingMethod()
+    {
+        return $this->belongsTo(ShippingMethod::class, 'shipping_method_id');
+    }
 
 
 

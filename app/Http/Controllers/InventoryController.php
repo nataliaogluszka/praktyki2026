@@ -10,9 +10,43 @@ class InventoryController extends Controller
 {
     public function index(Request $request): View
     {
+        $query = Product::with('inventory');
+
+        
+        if ($request->has('status')) {
+            $query->whereHas('inventory', function ($q) use ($request) {
+                if ($request->status == 'brak') {
+                    $q->where('quantity', 0);
+                } elseif ($request->status == 'ponizej20') {
+                    $q->where('quantity', '<=', 20);
+                } elseif ($request->status == 'ponizej50') {
+                    $q->where('quantity', '<=', 50);
+                } elseif ($request->status == 'powyzej50') {
+                    $q->where('quantity', '>', 50);
+                }
+            });
+        }
+
+        if ($request->has('sort')) {
+            if ($request->sort == 'latest') {
+                $query->latest();
+            } elseif ($request->sort == 'oldest') {
+                $query->oldest();
+            } elseif ($request->sort == 'majniej') {
+                $query->join('inventories', 'products.id', '=', 'inventories.product_id')
+                    ->orderBy('inventories.quantity', 'asc')
+                    ->select('products.*');
+            } elseif ($request->sort == 'najwiecej') {
+                $query->join('inventories', 'products.id', '=', 'inventories.product_id')
+                    ->orderBy('inventories.quantity', 'desc')
+                    ->select('products.*');
+            }
+        }
+
+        $products = $query->paginate(8)->withQueryString();
+
         return view('inventories.index', [
-            // Pobieramy produkty razem z ich stanami magazynowymi
-            'products' => Product::with('inventory')->paginate(8)
+            'products' => $products
         ]);
     }
     

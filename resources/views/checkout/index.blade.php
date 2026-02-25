@@ -2,22 +2,28 @@
 
 @section('content')
 <style>
-    .address-card-selectable { cursor: pointer; transition: all 0.2s; }
-    .address-card-selectable:hover { border-color: #0d6efd !important; }
-    .address-card-selectable.active { border-color: #0d6efd !important; background-color: #f8f9ff; }
+.address-card-selectable {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.address-card-selectable:hover {
+    border-color: #0d6efd !important;
+}
+
+.address-card-selectable.active {
+    border-color: #0d6efd !important;
+    background-color: #f8f9ff;
+}
 </style>
 
 <div class="container">
     <div class="row">
         <div class="col-lg-8">
             <h4 class="mb-4 fw-bold">Finalizacja zamówienia</h4>
-            @if ($errors->any())
+            @if(session('error'))
             <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+                {{ session('error') }}
             </div>
             @endif
 
@@ -52,32 +58,33 @@
                 </div>
 
                 @auth
-            @if($addresses->count() > 0)
-            <div class="mb-4">
-                <h5 class="fw-bold mb-3 text-secondary text-uppercase mx-2" style="font-size: 0.85rem; letter-spacing: 1px;">
-                    Zapisane Adresy (kliknij, aby wybrać)
-                </h5>
-                <div class="row g-3">
-                    @foreach ($addresses as $address)
-                    <div class="col-md-6">
-                        <div class="card border-1 shadow-sm address-card-selectable h-100" 
-                             onclick="fillAddress(this)"
-                             data-street="{{ $address->street }}"
-                             data-number="{{ $address->house_number }}"
-                             data-postcode="{{ $address->postal_code }}"
-                             data-city="{{ $address->city }}">
-                            <div class="card-body p-3">
-                                <p class="mb-0 fw-bold">{{ $address->street }} {{ $address->house_number }}</p>
-                                <p class="text-muted mb-0 small">{{ $address->postal_code }} {{ $address->city }}</p>
-                                <p class="text-muted mb-0 small text-uppercase" style="font-size: 0.7rem;">{{ $address->country }}</p>
+                @if($addresses->count() > 0)
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-3 text-secondary text-uppercase mx-2"
+                        style="font-size: 0.85rem; letter-spacing: 1px;">
+                        Zapisane Adresy (kliknij, aby wybrać)
+                    </h5>
+                    <div class="row g-3">
+                        @foreach ($addresses as $address)
+                        <div class="col-md-6">
+                            <div class="card border-1 shadow-sm address-card-selectable h-100"
+                                onclick="fillAddress(this)" data-street="{{ $address->street }}"
+                                data-number="{{ $address->house_number }}" data-postcode="{{ $address->postal_code }}"
+                                data-city="{{ $address->city }}">
+                                <div class="card-body p-3">
+                                    <p class="mb-0 fw-bold">{{ $address->street }} {{ $address->house_number }}</p>
+                                    <p class="text-muted mb-0 small">{{ $address->postal_code }} {{ $address->city }}
+                                    </p>
+                                    <p class="text-muted mb-0 small text-uppercase" style="font-size: 0.7rem;">
+                                        {{ $address->country }}</p>
+                                </div>
                             </div>
                         </div>
+                        @endforeach
                     </div>
-                    @endforeach
                 </div>
-            </div>
-            @endif
-            @endauth
+                @endif
+                @endauth
 
                 <div class="card cart-card mb-4 shadow-sm">
                     <div class="card-body">
@@ -85,25 +92,30 @@
                         <div class="row g-3">
                             <div class="col-8">
                                 <label class="form-label small text-muted">Ulica</label>
-                                <input type="text" name="shipping_street" id="shipping_street" class="form-control bg-light" required>
+                                <input type="text" name="shipping_street" id="shipping_street"
+                                    class="form-control bg-light" required>
                             </div>
                             <div class="col-4">
                                 <label class="form-label small text-muted">Numer</label>
-                                <input type="text" name="shipping_number" id="shipping_number" class="form-control bg-light" required>
+                                <input type="text" name="shipping_number" id="shipping_number"
+                                    class="form-control bg-light" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small text-muted">Kod pocztowy</label>
-                                <input type="text" name="shipping_postcode" id="shipping_postcode" class="form-control bg-light" required>
+                                <input type="text" name="shipping_postcode" id="shipping_postcode"
+                                    class="form-control bg-light" required>
                             </div>
                             <div class="col-md-8">
                                 <label class="form-label small text-muted">Miasto</label>
-                                <input type="text" name="shipping_city" id="shipping_city" class="form-control bg-light" required>
+                                <input type="text" name="shipping_city" id="shipping_city" class="form-control bg-light"
+                                    required>
                             </div>
 
                             @auth
                             <div class="col-12 mt-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="save_address" id="save_address">
+                                    <input class="form-check-input" type="checkbox" name="save_address"
+                                        id="save_address">
                                     <label class="form-check-label small" for="save_address">
                                         Zapisz ten adres w moich ustawieniach
                                     </label>
@@ -113,36 +125,23 @@
                         </div>
                     </div>
                 </div>
-                
+
 
                 <div class="card cart-card mb-4 shadow-sm">
                     <div class="card-body">
                         <h5 class="fw-bold mb-3 small-caps">Metoda dostawy</h5>
                         <div class="list-group list-group-flush">
+                            @foreach($shippingMethods as $method)
                             <label class="list-group-item d-flex justify-content-between align-items-center py-3">
                                 <div>
-                                    <input class="form-check-input me-3" type="radio" name="shipping_method"
-                                        value="paczkomat" data-cost="15.00" checked>
-                                    Paczkomat InPost
+                                    <input class="form-check-input me-3" type="radio" name="shipping_method_id"
+                                        value="{{ $method->id }}" data-cost="{{ $method->price }}"
+                                        {{ $loop->first ? 'checked' : '' }}>
+                                    {{ $method->name }}
                                 </div>
-                                <span class="fw-bold">15,00 zł</span>
+                                <span class="fw-bold">{{ number_format($method->price, 2, ',', ' ') }} zł</span>
                             </label>
-                            <label class="list-group-item d-flex justify-content-between align-items-center py-3">
-                                <div>
-                                    <input class="form-check-input me-3" type="radio" name="shipping_method"
-                                        value="kurier_inpost" data-cost="19.00">
-                                    Kurier InPost
-                                </div>
-                                <span class="fw-bold">19,00 zł</span>
-                            </label>
-                            <label class="list-group-item d-flex justify-content-between align-items-center py-3">
-                                <div>
-                                    <input class="form-check-input me-3" type="radio" name="shipping_method" value="dhl"
-                                        data-cost="22.00">
-                                    Kurier DHL
-                                </div>
-                                <span class="fw-bold">22,00 zł</span>
-                            </label>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -208,8 +207,10 @@ document.querySelectorAll('input[name="shipping_method"]').forEach(radio => {
         const baseTotal = $total;
         const grandTotal = baseTotal + shippingCost;
 
-        document.getElementById('shipping-cost-display').innerText = shippingCost.toFixed(2).replace('.', ',') + ' zł';
-        document.getElementById('grand-total-display').innerText = grandTotal.toFixed(2).replace('.', ',') + ' zł';
+        document.getElementById('shipping-cost-display').innerText = shippingCost.toFixed(2).replace(
+            '.', ',') + ' zł';
+        document.getElementById('grand-total-display').innerText = grandTotal.toFixed(2).replace('.',
+            ',') + ' zł';
     });
 });
 </script>

@@ -121,7 +121,7 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" href="{{ route('users.profile') }}">Mój profil</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('orders.user.index', Auth::user()) }}">Moje zamówienia</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('orders.user.index', Auth::user()) }}">Zamówienia</a></li>
                                     
                                     @can('isAdmin')
                                     <li>
@@ -137,8 +137,15 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="{{ route('orders.index') }}">Zamówienia</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('orders.index') }}">Wszystkie zamówienia</a></li>
                                     <li><a class="dropdown-item" href="{{ route('inventories.index') }}">Magazyn</a></li>
+                                    @endcan
+
+                                    @can('isAdmin')
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="/settings">Ustawienia sklepu</a></li>
                                     @endcan
 
                                     <li>

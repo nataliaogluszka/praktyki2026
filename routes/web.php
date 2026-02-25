@@ -13,6 +13,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingsController;
 
 
 Route::get('/about', function(){
@@ -135,12 +136,10 @@ Route::get('/orders/admin', [OrderController::class, 'index'])->name('orders.ind
 Route::patch('/orders/{order}/status', [OrderController::class, 'update'])->name('orders.update');
 
 
-
-
-
-
-
-
+Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index') -> middleware('can:isAdmin');
+Route::patch('/settings/update', [SettingsController::class, 'update'])->name('settings.update')->middleware('can:isAdmin');
+Route::post('/settings/shipping', [SettingsController::class, 'store'])->name('shipping.store');
+Route::delete('/settings/shipping/{id}', [SettingsController::class, 'destroy'])->name('shipping.destroy');
 
 
 
