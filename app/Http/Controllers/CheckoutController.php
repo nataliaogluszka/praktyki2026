@@ -98,6 +98,16 @@ class CheckoutController extends Controller
                 ]);
             }
 
+            if (session()->has('coupon')) {
+                $couponData = session()->get('coupon');
+                
+                $coupon = \App\Models\Coupon::where('code', $couponData['code'])->first();
+                
+                if ($coupon) {
+                    $coupon->increment('used_count');
+                }
+            }
+
             DB::commit();
             session()->forget(['cart', 'coupon']);
             return view('checkout.thanks', compact('order'));

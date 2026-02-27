@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Inventory;
+use App\Models\Setting;
 
 class ProductController extends Controller
 {
@@ -24,8 +25,12 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
+        $vatRateSetting = Setting::where('key', 'vat_rate')->first();
+        $vatRate = $vatRateSetting ? (float)$vatRateSetting->value : 23.0;
+
         return view('products.show', [
-            'product' => $product
+            'product' => $product,
+            'vatRate' => $vatRate
         ]);
     }
 

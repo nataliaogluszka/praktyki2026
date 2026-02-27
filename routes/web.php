@@ -120,6 +120,8 @@ Route::post('/coupons', [CouponController::class, 'store'])->name('coupons.store
 
 Route::put('/coupons/{coupon}', [CouponController::class, 'update'])->name('coupons.update');
 
+Route::post('/coupons/{coupon}/reset-usage', [CouponController::class, 'resetUsage'])->name('coupons.resetUsage');
+
 
 
 Route::get('/inventories/list', [InventoryController::class, 'index'])->name('inventories.index') -> middleware('auth') -> middleware('can:isInventory');
@@ -141,15 +143,4 @@ Route::patch('/settings/update', [SettingsController::class, 'update'])->name('s
 Route::post('/settings/shipping', [SettingsController::class, 'store'])->name('shipping.store');
 Route::delete('/settings/shipping/{id}', [SettingsController::class, 'destroy'])->name('shipping.destroy');
 
-
-
-// // Trasy tylko dla admina
-// Route::middleware(['auth', 'role:admin'])->group(function () {
-//     Route::get('/users/list', [AdminController::class, 'index']);
-// });
-
-// // Trasy tylko dla klientów
-// // Route::middleware(['auth', 'role:client'])->group(function () {
-// //     // Route::get('/dashboard', [UserController::class, 'index']);
-// // });
 

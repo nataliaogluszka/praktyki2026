@@ -31,13 +31,18 @@
 
             <h1 class="display-5 fw-bold">{{ $product->name }}</h1>
 
-            <div class="fs-4 mb-3">
-                <span class="text-primary fw-bold">{{ number_format($product->price, 2) }} zł</span>
+            <div class="mb-3">
+                <span class="fs-2 text-primary fw-bold">{{ number_format($product->price, 2) }} zł</span><br>
+                <span class="text-secondary opacity-75 fs-5">VAT: {{ number_format($product->price * ($vatRate/100), 2 )}} zł</span>
             </div>
 
-            <p class="lead">
+            <div>
+                Opis:
+                <p class="lead">
                 {{ $product->description ?? 'Brak opisu dla tego produktu.' }}
-            </p>
+                </p>
+            </div>
+            
 
             <hr class="my-4">
 
