@@ -4,11 +4,11 @@
 <div class="container">
     <h1 class="fw-bold mb-5">{{ $mainCategory->name }}</h1>
 
-    @foreach ($sections as $section) {{-- POZIOM 2: np. Odzież damska --}}
+    @foreach ($sections as $section)
     <div class="mb-5">
         <h2 class="fw-bold mb-4 text-dark">{{ $section->name }}</h2>
 
-        @foreach ($section->children as $subCategory) {{-- POZIOM 3: np. Bluzy, Koszulki --}}
+        @foreach ($section->children as $subCategory)
         <div class="mb-5 ps-4 border-start border-2">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="fw-bold mb-0 text-secondary">{{ $subCategory->name }}</h4>
@@ -41,7 +41,7 @@
                     </div> -->
                     <div class="card h-100 border-0 shadow-sm hover-shadow transition">
                         <div style="height: 250px; overflow: hidden; position: relative;">
-                            <img src="{{ asset('images/products/' . $product->image) }}" class="card-img-top img-fluid"
+                            <img src="{{ asset('images/products/' . ($product->product_images->first()?->path ?? 'default.jpg')) }}" class="card-img-top img-fluid"
                                 alt="{{ $product->name }}" style="object-fit: cover; height: 100%;">
                         </div>
 

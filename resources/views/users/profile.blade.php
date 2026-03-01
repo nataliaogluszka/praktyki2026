@@ -65,7 +65,8 @@
                                 class="position-absolute top-0 end-0 m-2">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger border-0" style="font-size: 0.7rem;"
+                                <button type="submit" class="btn btn-sm btn-outline-danger border-0"
+                                    style="font-size: 0.7rem;"
                                     onclick="return confirm('Czy na pewno chcesz usunąć ten adres?')" aria-label="Usuń">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
                                         class="bi bi-trash" viewBox="0 0 16 16">

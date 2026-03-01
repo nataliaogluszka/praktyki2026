@@ -2,17 +2,6 @@
 
 @section('content')
 <div class="container">
-    <!-- <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Koszyk') }}</div>
-
-                <div class="card-body">
-                    <p>Twój koszyk jest pusty.</p>
-                </div>
-            </div>
-        </div>
-    </div> -->
     <div class="row">
         <div class="col-lg-8">
             <h4 class="mb-4 fw-bold">Twój koszyk ({{ count($cart) }})</h4>
@@ -35,8 +24,8 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-2">
-                            <img src="{{ asset('images/products/'.$item['image']) }}" alt="Produkt" class="product-img"
-                                width="100%">
+                            <img src="{{ asset('images/products/' . ($item['image'] ?? 'default.jpg')) }}" 
+                         alt="{{ $item['name'] }}" class="product-img" width="100%">
                         </div>
                         <div class="col-md-5">
                             <h5 class="card-title mb-1 fw-bold">{{ $item['name'] }}</h5>
@@ -151,10 +140,6 @@
                                 Zastosuj
                             </button>
                         </form>
-                        <!--@if(session()->has('coupon'))
-                        <small class="text-success">Kod <strong>{{ session('coupon')['code'] }}</strong> jest
-                            aktywny!</small>
-                        @endif -->
                     </div>
 
                     <div class="d-flex justify-content-between mb-2">

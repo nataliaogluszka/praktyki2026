@@ -67,10 +67,9 @@ class UserController extends Controller
         return back()->with('success', 'Rola została zaktualizowana.');
     }
 
-    // Usuwanie użytkownika
     public function destroy(User $user)
     {
-        // Opcjonalnie: zabezpieczenie, aby admin nie usunął samego siebie
+        
         if (Auth::id() === $user->id) {
             return back()->with('error', 'Nie możesz usunąć własnego konta!');
         }

@@ -24,7 +24,6 @@
                     <div class="mb-4">
                         <label class="form-label small fw-bold text-muted text-uppercase mb-3">Kategorie</label>
                         <div class="category-tree">
-                            {{-- Główny poziom (np. Kobieta, Mężczyzna) --}}
                             @foreach($categories as $mainCat)
                             <div class="main-cat-wrapper mb-2">
                                 <div class="d-flex align-items-center fw-bold text-dark mb-1">
@@ -32,14 +31,12 @@
                                     {{ $mainCat->name }}
                                 </div>
 
-                                {{-- Drugi poziom (np. Odzież, Obuwie) --}}
                                 @foreach($mainCat->children as $subCat)
                                 <div class="ms-3 mb-1">
                                     <span class="small text-muted italic d-block mb-1">
                                         {{ $subCat->name }}
                                     </span>
 
-                                    {{-- Trzeci poziom (np. Bluzy, Sneakersy) - ELEMENTY KLIKALNE --}}
                                     <div class="ms-2">
                                         @foreach($subCat->children as $leafCat)
                                         <div class="form-check">
@@ -115,10 +112,8 @@
                 <div class="col">
                     <div class="card h-100 border-0 shadow-sm hover-shadow transition">
                         <div style="height: 250px; overflow: hidden; position: relative;">
-                            <img src="{{ asset('images/products/' . $product->image) }}" class="card-img-top img-fluid"
-                                alt="{{ $product->name }}" style="object-fit: cover; height: 100%;">
+                            <img src="{{ asset('images/products/' . ($product->product_images->first()?->path ?? 'default.jpg')) }}" alt="{{ $product->name }}" class="card-img-top img-fluid" style="object-fit: cover; height: 100%;">
 
-                            {{-- Etykieta dostępności --}}
                             @if($product->inventory && $product->inventory->quantity > 0)
                             <span class="badge bg-success position-absolute top-0 end-0 m-2">Dostępny</span>
                             @else
@@ -145,9 +140,6 @@
                                         Dodaj do koszyka
                                     </button>
                                 </form>
-                                <!-- <a href="{{ route('products.show', $product->id) }}" class="btn btn-outline-primary px-3">
-                                    Szczegóły
-                                </a> -->
                             </div>
                         </div>
                     </div>

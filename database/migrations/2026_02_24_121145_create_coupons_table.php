@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('coupons', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique(); // Nazwa/kod zniżki (np. LATO20)
-            $table->enum('type', ['fixed', 'percent']); // Typ: kwotowa lub procentowa
-            $table->decimal('value', 10, 2); // Wartość rabatu
+            $table->string('code')->unique();
+            $table->enum('type', ['fixed', 'percent']); 
+            $table->decimal('value', 10, 2);
             $table->timestamps();
         });
     }

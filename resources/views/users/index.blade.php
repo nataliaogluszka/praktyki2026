@@ -23,16 +23,6 @@
                 <td>{{ $user-> surname }}</td>
                 <td>{{ $user-> role }}</td>
                 <td class="d-flex align-items-center">
-
-                    <!-- <div class="dropdown me-2">
-                        <button class="btn btn-sm btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">Zmień rolę
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">user</a></li>
-                            <li><a class="dropdown-item" href="#">admin</a></li>
-                        </ul>
-                    </div> -->
                     <div class="dropdown me-2">
                         <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             Zmień rolę

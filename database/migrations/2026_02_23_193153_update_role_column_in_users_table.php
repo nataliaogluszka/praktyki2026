@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Dodajemy 'inventory' do listy dozwolonych wartości
             $table->enum('role', ['user', 'admin', 'inventory'])
                   ->default('user')
                   ->change();
@@ -25,7 +24,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Przywracamy poprzedni stan w razie rollbacku
             $table->enum('role', ['user', 'admin'])
                   ->default('user')
                   ->change();

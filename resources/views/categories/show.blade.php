@@ -11,8 +11,7 @@
         <div class="col">
             <div class="card h-100 border-0 shadow-sm hover-shadow transition">
                 <div style="height: 250px; overflow: hidden;">
-                    <img src="{{ asset('images/products/' . $product->image) }}" class="card-img-top img-fluid" alt="{{ $product->name }}"
-                        style="object-fit: cover; height: 100%;">
+                    <img src="{{ asset('images/products/' . ($product->product_images->first()?->path ?? 'default.jpg')) }}" class="card-img-top img-fluid" alt="{{ $product->name }}" style="object-fit: cover; height: 100%;">
                 </div>
 
                 <div class="card-body d-flex flex-column">

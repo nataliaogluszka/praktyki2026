@@ -100,8 +100,7 @@ class CartController extends Controller
             $foundValidProduct = false;
 
             foreach ($cart as $id => $item) {
-                $product = \App\Models\Product::find($id);
-                // Sprawdzamy czy produkt istnieje i czy należy do kategorii kuponu
+                $product = Product::find($id);
                 if ($product && $product->category_id == $coupon->category_id) {
                     $foundValidProduct = true;
                     break;
@@ -154,6 +153,7 @@ class CartController extends Controller
     {
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
+        $imagePath = $product->product_images->first()?->path;
 
         if(isset($cart[$id])) {
             $cart[$id]['quantity']++;
@@ -162,7 +162,7 @@ class CartController extends Controller
                 "name" => $product->name,
                 "quantity" => 1,
                 "price" => $product->price,
-                "image" => $product->image
+                "image" => $imagePath,
             ];
         }
 

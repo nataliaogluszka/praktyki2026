@@ -6,116 +6,128 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use App\Models\Product;
 use App\Models\Category;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Inventory;
 use App\Models\Setting;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
         return view('products.index', [          
-            'products' => Product::with('category')->paginate(8), // Dodałem eager loading kategorii
-            // Pobieramy tylko główne kategorie z ich dziećmi
+            'products' => Product::with(['category', 'product_images'])->paginate(8),
             'categories' => Category::whereNull('parent_id')->with('children.children')->get()
         ]);
     }
     
     public function show(string $id)
     {
-        $product = Product::findOrFail($id);
-
+        $product = Product::with('product_images')->findOrFail($id);
+        $opinions = $product->opinions()->with('user')->latest()->paginate(10);
         $vatRateSetting = Setting::where('key', 'vat_rate')->first();
         $vatRate = $vatRateSetting ? (float)$vatRateSetting->value : 23.0;
 
         return view('products.show', [
             'product' => $product,
-            'vatRate' => $vatRate
+            'vatRate' => $vatRate,
+            'opinions' => $opinions,
         ]);
     }
 
     public function destroy(Product $product)
     {
-
+        foreach ($product->product_images as $image) {
+            $path = public_path('images/products/' . $image->path);
+            if (file_exists($path)) {
+                unlink($path);
+            }
+        }
+        
         $product->delete();
-
         return back()->with('success', 'Produkt został usunięty.');
-    }
-
-
-
-    public function edit(Product $product)
-    {
-        // Pobieramy drzewo kategorii (3 poziomy)
-        $categories = Category::whereNull('parent_id')->with('children.children')->get();
-        return view('products.edit', compact('product', 'categories'));
     }
 
     public function update(Request $request, Product $product): RedirectResponse
     {
-        $data = $request->validate([
+        
+        $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'delete_images' => 'nullable|array',
         ]);
 
-        if ($request->hasFile('image')) {
-            // 1. Usuwamy stare zdjęcie, jeśli nie jest domyślne
-            if ($product->image && $product->image !== 'default.jpg') {
-                $oldPath = public_path('images/products/' . $product->image);
-                if (file_exists($oldPath)) {
-                    unlink($oldPath);
+        $product->update($request->only([
+            'name', 'price', 'description', 'category_id'
+        ]));
+
+        // Usuwanie wybranych zdjęć
+        if ($request->filled('delete_images')) {
+            $imagesToDelete = $product->product_images()
+                ->whereIn('id', $request->delete_images)
+                ->get();
+
+            foreach ($imagesToDelete as $image) {
+                $path = public_path('images/products/' . $image->path);
+                if (file_exists($path)) {
+                    unlink($path);
                 }
+                $image->delete();
             }
-
-            // 2. Obsługa nowego zdjęcia (analogicznie do store)
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/products'), $imageName);
-            
-            $data['image'] = $imageName;
-        } else {
-            // Jeśli nie przesłano nowego zdjęcia, usuwamy 'image' z tablicy $data,
-            // aby Laravel nie próbował go nadpisać w bazie (zostanie stare).
-            unset($data['image']);
         }
 
-        $product->update($data);
+        // Dodawanie nowych zdjęć
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/products'), $imageName);
+            $product->product_images()->create(['path' => $imageName]);
+        }
 
-        return redirect()->route('products.index')
-            ->with('success', 'Produkt został zaktualizowany!');
+        return back()->with('success', 'Produkt zaktualizowany!');
     }
 
-    public function store(Request $request) {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+    public function store(Request $request)
+    {
+        if ($request->hasFile('image')) {
+            Log::info('Plik otrzymany:', [$request->file('image')]);
+        } else {
+            Log::info('Brak pliku o nazwie "image" w żądaniu');
+        }
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'price' => 'required|numeric|min:0',
+        'description' => 'nullable|string',
+        'category_id' => 'required|exists:categories,id',
+        'image' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048', 
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        $product = Product::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
         ]);
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            // Tworzymy unikalną nazwę pliku
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            // Przenosimy plik do folderu public/images/products
-            $image->move(public_path('images/products'), $imageName);
-            // Zapisujemy ścieżkę do tablicy danych
-            $data['image'] = $imageName;
-        } else {
-            $data['image'] = 'default.jpg'; // Domyślny obrazek
+            $file = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/products'), $imageName);
+            $product->product_images()->create(['path' => $imageName]);
         }
 
-        $product = Product::create($data); 
+        DB::commit();
+        return back()->with('success', 'Produkt dodany!');
 
-        Inventory::create([
-            'product_id' => $product->id,
-            'quantity' => 0,
-        ]);
-
-        return back()->with('success', 'Produkt został dodany pomyślnie!');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->with('error', 'Błąd zapisu: ' . $e->getMessage());
     }
+}
 }

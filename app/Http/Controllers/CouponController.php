@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use App\Models\Coupon;
 use App\Models\Category;
 
@@ -30,7 +29,6 @@ class CouponController extends Controller
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        // Ważne: checkbox is_active nie wysyła wartości, jeśli jest odznaczony
         $data['is_active'] = $request->has('is_active') ? 1 : 0;
 
         if (empty($data['category_id'])) {
@@ -62,31 +60,6 @@ class CouponController extends Controller
         $coupon->update($data);
         return back()->with('success', 'Kupon zaktualizowany!');
     }
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'code' => 'required|unique:coupons,code|max:255',
-    //         'type' => 'required|in:fixed,percent',
-    //         'value' => 'required|numeric|min:0',
-    //     ]);
-
-    //     Coupon::create($validated);
-
-    //     return redirect()->back()->with('success', 'Kod rabatowy został dodany.');
-    // }
-
-    // public function update(Request $request, Coupon $coupon)
-    // {
-    //     $validated = $request->validate([
-    //         'code' => 'required|max:255|unique:coupons,code,' . $coupon->id,
-    //         'type' => 'required|in:fixed,percent',
-    //         'value' => 'required|numeric|min:0',
-    //     ]);
-
-    //     $coupon->update($validated);
-
-    //     return redirect()->route('coupons.index')->with('success', 'Kod został zaktualizowany.');
-    // }
 
     public function resetUsage(Coupon $coupon)
     {
