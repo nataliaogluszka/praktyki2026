@@ -14,6 +14,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\OpinionController;
 
 
 Route::get('/about', function(){
@@ -33,22 +34,15 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/users/list', [UserController::class, 'index']) -> middleware('auth') -> middleware('can:isAdmin');
 
-// Trasa do zmiany roli
 Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
 
-// Trasa do usuwania użytkownika
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
 Route::get('/profile', [UserController::class, 'show'])->name('users.profile') -> middleware('auth');
 
 Route::middleware(['auth'])->group(function () {
-    // Widok profilu
-    // Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    
-    // Aktualizacja danych użytkownika
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     
-    // Dodawanie nowego adresu
     Route::post('/addresses', [ProfileController::class, 'storeAddress'])->name('addresses.store');
 
     Route::delete('/addresses/{address}', [ProfileController::class, 'destroyAddress'])->name('addresses.destroy');
@@ -57,15 +51,12 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/products/list', [ProductController::class, 'index']) -> name('products.index') -> middleware('auth') -> middleware('can:isAdmin');
 
-// Trasa do wyświetlenia formularza edycji
 Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
 
-// Trasa do zapisania zmian
 Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
 
 Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
-// Trasa do zapisu nowego produktu
 Route::post('/products', [ProductController::class, 'store'])->name('products.store');
 
 Route::get('/products/show/{id}', [ProductController::class, 'show'])->name('products.show');
@@ -139,8 +130,14 @@ Route::patch('/orders/{order}/status', [OrderController::class, 'update'])->name
 
 
 Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index') -> middleware('can:isAdmin');
+
 Route::patch('/settings/update', [SettingsController::class, 'update'])->name('settings.update')->middleware('can:isAdmin');
+
 Route::post('/settings/shipping', [SettingsController::class, 'store'])->name('shipping.store');
+
 Route::delete('/settings/shipping/{id}', [SettingsController::class, 'destroy'])->name('shipping.destroy');
 
 
+Route::post('/products/{product}/opinions', [OpinionController::class, 'store'])->name('opinions.store')->middleware('auth');
+
+Route::delete('/opinions/{opinion}', [OpinionController::class, 'destroy'])->name('opinions.destroy')->middleware('auth');

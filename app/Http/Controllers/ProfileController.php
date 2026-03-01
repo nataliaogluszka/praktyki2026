@@ -12,13 +12,12 @@ class ProfileController extends Controller
     {
           /** @var \App\Models\User $user */
         $user = Auth::user();
-        $addresses = $user->addresses; // Zakładając relację w modelu User
+        $addresses = $user->addresses;
         $orders = $user->orders()->latest()->take(5)->get();
 
         return view('profile', compact('user', 'addresses', 'orders'));
     }
 
-    // Aktualizacja danych: Imię, Nazwisko, Email
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -47,7 +46,6 @@ class ProfileController extends Controller
         ]);
 
         $user = Auth::user();
-        // Używamy obiektu $user bezpośrednio
           /** @var \App\Models\User $user */
         $user->addresses()->create($validated);
 
@@ -55,14 +53,11 @@ class ProfileController extends Controller
     }
 
     public function destroyAddress(Address $address)
-{
-    // Zabezpieczenie: sprawdź, czy adres należy do zalogowanego użytkownika
-    if ($address->user_id !== Auth::id()) {
-        abort(403);
+    {
+        if ($address->user_id !== Auth::id()) {
+            abort(403);
+        }
+        $address->delete();
+        return back()->with('success', 'Adres został usunięty.');
     }
-
-    $address->delete();
-
-    return back()->with('success', 'Adres został usunięty.');
-}
 }

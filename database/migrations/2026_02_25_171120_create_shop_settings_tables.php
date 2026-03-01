@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up()
     {
-        // Tabela metod wysyłki
         Schema::create('shipping_methods', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -20,7 +19,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabela ogólnych ustawień (Klucz -> Wartość)
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique();
@@ -28,7 +26,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Aktualizacja tabeli orders
         Schema::table('orders', function (Blueprint $table) {
             $table->unsignedBigInteger('shipping_method_id')->nullable()->after('status');
             $table->foreign('shipping_method_id')->references('id')->on('shipping_methods');

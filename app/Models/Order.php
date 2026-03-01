@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Order extends Model
 {
-    // Pola, które można masowo wypełniać
     protected $fillable = [
         'user_id',
         'total_price',
@@ -26,7 +25,6 @@ class Order extends Model
         'discount_code'
     ];
 
-    // Automatyczna konwersja typów (Casting)
     protected $casts = [
         'is_paid' => 'boolean',
         'is_completed' => 'boolean',
@@ -35,9 +33,7 @@ class Order extends Model
         'tax_amount' => 'decimal:2',
     ];
 
-    /**
-     * Relacja do użytkownika, który złożył zamówienie.
-     */
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class)->withDefault([
@@ -46,18 +42,12 @@ class Order extends Model
         ]);
     }
 
-    /**
-     * Relacja do pozycji zamówienia (produktów).
-     */
+
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
 
-    /**
-     * Sprawdza, czy zamówienie kwalifikuje się do zwrotu.
-     * Logika: opłacone, zakończone i nie starsze niż 14 dni.
-     */
     public function canBeReturned(): bool
     {
         return $this->is_paid && 
@@ -65,9 +55,7 @@ class Order extends Model
                $this->created_at->diffInDays(now()) <= 14;
     }
 
-    /**
-     * Oblicza sumę produktów, które nie zostały jeszcze zwrócone.
-     */
+
     public function getRefundableAmountAttribute(): float
     {
         return $this->items->sum(function ($item) {
@@ -81,41 +69,14 @@ class Order extends Model
     }
 
 
-
-        /**
-     * Filtruje tylko opłacone zamówienia.
-     * Przykład: Order::paid()->get();
-     */
     public function scopePaid($query)
     {
         return $query->where('is_paid', true);
     }
 
-    /**
-     * Filtruje zamówienia, które czekają na wysyłkę.
-     * Przykład: Order::pendingShipping()->get();
-     */
     public function scopePendingShipping($query)
     {
         return $query->where('status', 'processing')
                     ->whereNull('shipping_date');
-    }
-
-    /**
-     * Filtruje zamówienia z konkretnego miesiąca.
-     * Przykład: Order::fromMonth(2)->get();
-     */
-    public function scopeFromMonth($query, $month)
-    {
-        return $query->whereMonth('created_at', $month)
-                    ->whereYear('created_at', now()->year);
-    }
-
-    /**
-     * Filtruje zamówienia o wysokiej wartości (np. powyżej 1000 PLN).
-     */
-    public function scopeHighValue($query, $threshold = 1000)
-    {
-        return $query->where('total_price', '>=', $threshold);
     }
 }

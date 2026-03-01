@@ -18,12 +18,10 @@ class SettingsController extends Controller
 
     public function update(Request $request)
     {
-        // Aktualizacja cen wysyłki
         foreach ($request->shipping as $id => $price) {
             ShippingMethod::where('id', $id)->update(['price' => $price]);
         }
 
-        // Aktualizacja VAT
         Setting::where('key', 'vat_rate')->update(['value' => $request->vat_rate]);
 
         return back()->with('success', 'Ustawienia zostały zapisane.');

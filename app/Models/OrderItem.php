@@ -27,9 +27,6 @@ class OrderItem extends Model
         return $this->belongsTo(Product::class);
     }
     
-    /**
-     * Oblicza wartość danej pozycji (cena * ilość).
-     */
     public function getTotalPriceAttribute(): float
     {
         return $this->quantity * $this->unit_price_gross;

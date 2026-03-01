@@ -7,14 +7,7 @@ use App\Models\Product;
 use App\Models\Category;
 
 class CategoryController extends Controller
-{
-    // public function index(Request $request)
-    // {
-    //     $categories = Category::all();
-    //     $products = Product::all();
-    //     return view('categories', compact('categories', 'products'));
-    // }
-    
+{ 
     public function show(string $name)
     {
         $category = Category::where('name', $name)->first();
@@ -27,23 +20,19 @@ class CategoryController extends Controller
 
     public function genderIndex($name)
     {
-        // Szukamy kategorii "Kobieta" lub "Mężczyzna" po nazwie z URL
         $mainCategory = Category::where('name', $name)->firstOrFail();
 
-        // Pobieramy Poziom 2 (np. Odzież damska) oraz ich dzieci (Poziom 3: Bluzy) z produktami
         $sections = Category::where('parent_id', $mainCategory->id)
             ->with(['children.products' => function($query) {
-                $query->take(4); // Limit produktów dla każdej najniższej kategorii
+                $query->take(4);
             }])
             ->get();
 
-        // Zmieniamy ścieżkę widoku na categories.gender (zgodnie ze screenem)
         return view('categories.gender', compact('mainCategory', 'sections'));
     }
 
     public function index()
     {
-        // Pobieramy tylko główne kategorie (te bez rodzica) z ich podkategoriami
         $categories = Category::whereNull('parent_id')
             ->with('children.children')
             ->get();
@@ -67,7 +56,6 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
-        // Opcjonalnie: sprawdź czy kategoria ma podkategorie lub produkty
         if ($category->children()->count() > 0) {
             return back()->with('error', 'Nie można usunąć kategorii, która posiada podkategorie!');
         }

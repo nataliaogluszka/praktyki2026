@@ -22,7 +22,6 @@ return new class extends Migration
             $table->text('comment')->nullable();
             $table->string('headline')->nullable()->comment('Krótki tytuł opinii');
 
-            // Dodatkowe informacje
             $table->boolean('is_verified_purchase')->default(false);
             $table->integer('helpful_count')->default(0)->comment('Liczba osób, którym pomogła opinia');
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');

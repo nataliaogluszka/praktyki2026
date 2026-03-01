@@ -15,13 +15,10 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $query = Order::query();
-
-        // Filtrowanie po statusie
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Sortowanie
         if ($request->sort === 'oldest') {
             $query->orderBy('created_at', 'asc');
         } else {
@@ -33,16 +30,12 @@ class OrderController extends Controller
         return view('orders.index', compact('orders'));
     }
 
-    // Metoda aktualizująca status
     public function update(Request $request, Order $order)
     {
-        
         $request->validate([
             'status' => 'required|in:w przygotowaniu,wysłano',
         ]);
-
         $order->update(['status' => $request->status]);
-        
         return back()->with('success', 'Status zaktualizowany!');
     }
 
@@ -81,7 +74,6 @@ class OrderController extends Controller
      */
     
 
-    // Usuwanie użytkownika
     public function destroy(Order $order)
     {
         $order->delete();

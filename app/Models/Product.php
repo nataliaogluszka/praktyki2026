@@ -6,23 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
 class Product extends Model
 {
     use HasFactory;
-    // Dodaj category_id do listy
+
     protected $fillable = [
+        'id',
         'name',
         'description',
-        'image',
         'price',
         'category_id', 
     ];
 
-    /**
-     * Relacja: Produkt należy do jednej kategorii.
-     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
@@ -30,5 +28,21 @@ class Product extends Model
 
     public function inventory() {
         return $this->hasOne(Inventory::class);
+    }
+
+    public function opinions()
+    {
+        return $this->hasMany(Opinion::class);
+    }
+
+    public function product_images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
+    // Dodaj tę metodę dla atrybutów:
+    public function attributes(): HasMany
+    {
+        return $this->hasMany(ProductAttribute::class);
     }
 }

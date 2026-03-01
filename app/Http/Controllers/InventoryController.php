@@ -61,23 +61,20 @@ class InventoryController extends Controller
     }
 
     public function update(Request $request)
-{
-    $request->validate([
-        'id' => 'required|exists:products,id',
-        'quantity' => 'required|integer|min:0',
-    ]);
+    {
+        $request->validate([
+            'id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:0',
+        ]);
 
-    // Aktualizujemy rekord w powiązanej tabeli inventory
-    $product = Product::findOrFail($request->id);
-    
-    // updateOrCreate zabezpieczy Cię na wypadek, gdyby rekord w inventories jeszcze nie istniał
-    $product->inventory()->updateOrCreate(
-        ['product_id' => $product->id],
-        ['quantity' => $request->quantity]
-    );
+        $product = Product::findOrFail($request->id);
+        $product->inventory()->updateOrCreate(
+            ['product_id' => $product->id],
+            ['quantity' => $request->quantity]
+        );
 
-    return redirect()->back()->with('success', 'Stan zaktualizowany!');
-}
+        return redirect()->back()->with('success', 'Stan zaktualizowany!');
+    }
 
     public function store(Request $request) {
         //   
