@@ -22,6 +22,17 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted text-uppercase mb-2">Rozmiar</label>
+                        <select name="size" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">Wszystkie</option>
+                            @foreach($sizes as $size)
+                                <option value="{{ $size }}" {{ request('size') == $size ? 'selected' : '' }}>
+                                    {{ $size }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-4">
                         <label class="form-label small fw-bold text-muted text-uppercase mb-3">Kategorie</label>
                         <div class="category-tree">
                             @foreach($categories as $mainCat)
@@ -62,7 +73,7 @@
                     <div class="mb-4">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" name="available_only" id="availableOnly"
-                                {{ request('available_only') ? 'checked' : '' }}>
+                                {{ request('available_only') ? 'checked' : '' }} onchange="this.form.submit()">
                             <label class="form-check-label small" for="availableOnly">Tylko dostępne</label>
                         </div>
                     </div>
@@ -79,6 +90,7 @@
                     <input type="hidden" name="min_price" value="{{ request('min_price') }}">
                     <input type="hidden" name="max_price" value="{{ request('max_price') }}">
                     <input type="hidden" name="category" value="{{ request('category') }}">
+                    <input type="hidden" name="size" value="{{ request('size') }}">
 
                     <div class="input-group">
                         <input type="search" name="search" id="search" value="{{ request('search') }}"
@@ -92,6 +104,7 @@
                     <input type="hidden" name="min_price" value="{{ request('min_price') }}">
                     <input type="hidden" name="max_price" value="{{ request('max_price') }}">
                     <input type="hidden" name="category" value="{{ request('category') }}">
+                    <input type="hidden" name="size" value="{{ request('size') }}">
 
                     <label for="sort" class="me-2 mb-0 d-none d-md-block">Sortuj:</label>
                     <select name="sort" id="sort" class="form-select form-select-sm w-auto"
@@ -112,12 +125,16 @@
                 <div class="col">
                     <div class="card h-100 border-0 shadow-sm hover-shadow transition">
                         <div style="height: 250px; overflow: hidden; position: relative;">
-                            <img src="{{ asset('images/products/' . ($product->product_images->first()?->path ?? 'default.jpg')) }}" alt="{{ $product->name }}" class="card-img-top img-fluid" style="object-fit: cover; height: 100%;">
+                            <img src="{{ asset('images/products/' . ($product->product_images->first()?->path ?? 'default.jpg')) }}"
+                                alt="{{ $product->name }}" class="card-img-top img-fluid"
+                                style="object-fit: cover; height: 100%;">
 
-                            @if($product->inventory && $product->inventory->quantity > 0)
-                            <span class="badge bg-success position-absolute top-0 end-0 m-2">Dostępny</span>
+                            @if($product->inventories->where('quantity', '>', 0)->count() > 0)
+                            <span class="badge bg-success position-absolute top-0 end-0 m-2"
+                                style="z-index: 10;">Dostępny</span>
                             @else
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">Brak</span>
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2"
+                                style="z-index: 10;">Brak</span>
                             @endif
                         </div>
 
@@ -134,13 +151,17 @@
                                 <span
                                     class="fs-5 fw-bold text-primary">{{ number_format($product->price, 2, ',', ' ') }}
                                     zł</span>
-                                <form action="{{ route('cart.add', $product->id) }}" method="POST">
-                                    @csrf
-                                    <button class="btn btn-primary btn-sm px-3" type="submit">
-                                        Dodaj do koszyka
-                                    </button>
-                                </form>
-                            </div>
+                                
+                                <button class="btn btn-primary btn-sm px-3 open-size-modal" 
+                                        type="button"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#sizeModal"
+                                        data-product-id="{{ $product->id }}"
+                                        data-product-name="{{ $product->name }}"
+                                        data-inventories="{{ json_encode($product->inventories->where('quantity', '>', 0)->values()) }}">
+                                    Dodaj do koszyka
+                                </button>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -157,4 +178,73 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="sizeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="" method="POST" id="addToCartForm">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Wybierz rozmiar: <span id="modalProductName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="inventory_id" class="form-label">Rozmiary</label>
+                        <select name="inventory_id" id="inventory_id" class="form-select" required>
+                            </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Ilość</label>
+                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="submit" class="btn btn-primary">Dodaj do koszyka</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var sizeModal = document.getElementById('sizeModal');
+    sizeModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var productId = button.getAttribute('data-product-id');
+        var productName = button.getAttribute('data-product-name');
+        var inventories = JSON.parse(button.getAttribute('data-inventories'));
+
+        var modalTitle = sizeModal.querySelector('.modal-title #modalProductName');
+        var inventorySelect = sizeModal.querySelector('#inventory_id');
+        var form = sizeModal.querySelector('#addToCartForm');
+
+        var quantityInput = sizeModal.querySelector('#quantity');
+        quantityInput.value = 1; 
+        quantityInput.closest('.mb-3').style.display = 'none'; 
+
+        modalTitle.textContent = productName;
+        
+        form.action = "{{ route('cart.add', ':id') }}".replace(':id', productId);
+
+        inventorySelect.innerHTML = '';
+
+        if (inventories.length === 0) {
+            var option = document.createElement('option');
+            option.text = 'Brak dostępnych rozmiarów';
+            inventorySelect.add(option);
+            return;
+        }
+
+        inventories.forEach(function (inventory) {
+            var option = document.createElement('option');
+            option.value = inventory.id;
+            option.text = inventory.size;
+            inventorySelect.add(option);
+        });
+    });
+});
+</script>
 @endsection

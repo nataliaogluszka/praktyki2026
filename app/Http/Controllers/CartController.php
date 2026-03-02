@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Coupon;
 use Carbon\Carbon;
+use App\Models\Inventory;
 
 class CartController extends Controller
 {
@@ -149,26 +150,37 @@ class CartController extends Controller
         return redirect()->back()->with('success', 'Kod rabatowy został usunięty.');
     }
 
-    public function add(Request $request, $id)
-    {
-        $product = Product::findOrFail($id);
-        $cart = session()->get('cart', []);
-        $imagePath = $product->product_images->first()?->path;
+    public function add(Request $request, $productId)
+{
+    $request->validate([
+        'inventory_id' => 'required|exists:inventories,id',
+    ]);
 
-        if(isset($cart[$id])) {
-            $cart[$id]['quantity']++;
-        } else {
-            $cart[$id] = [
-                "name" => $product->name,
-                "quantity" => 1,
-                "price" => $product->price,
-                "image" => $imagePath,
-            ];
-        }
+ 
+    $inventory = Inventory::findOrFail($request->inventory_id);
+    $product = $inventory->product;
+    
+    $cart = session()->get('cart', []);
 
-        session()->put('cart', $cart);
-        return redirect()->back()->with('success', 'Produkt dodany do koszyka!');
+
+    $cartKey = $inventory->id;
+
+    if(isset($cart[$cartKey])) {
+        $cart[$cartKey]['quantity']++;
+    } else {
+        $cart[$cartKey] = [
+            "name" => $product->name,
+            "size" => $inventory->size, 
+            "quantity" => 1,
+            "price" => $product->price,
+            "image" => $product->product_images->first()?->path,
+            "inventory_id" => $inventory->id, 
+        ];
     }
+
+    session()->put('cart', $cart);
+    return redirect()->back()->with('success', 'Produkt ' . $product->name . ' (' . $inventory->size . ') dodany do koszyka!');
+}
 
     public function remove($id)
     {

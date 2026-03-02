@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Product;
-use Illuminate\Contracts\View\View;
+use App\Models\Inventory;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 
 class InventoryController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Product::with('inventory');
+        $query = Product::with('inventories');
 
-        
-        if ($request->has('status')) {
-            $query->whereHas('inventory', function ($q) use ($request) {
+        if ($request->has('status') && $request->status != '') {
+            $query->whereHas('inventories', function ($q) use ($request) {
                 if ($request->status == 'brak') {
                     $q->where('quantity', 0);
                 } elseif ($request->status == 'ponizej20') {
@@ -32,14 +33,13 @@ class InventoryController extends Controller
                 $query->latest();
             } elseif ($request->sort == 'oldest') {
                 $query->oldest();
-            } elseif ($request->sort == 'majniej') {
-                $query->join('inventories', 'products.id', '=', 'inventories.product_id')
-                    ->orderBy('inventories.quantity', 'asc')
-                    ->select('products.*');
-            } elseif ($request->sort == 'najwiecej') {
-                $query->join('inventories', 'products.id', '=', 'inventories.product_id')
-                    ->orderBy('inventories.quantity', 'desc')
-                    ->select('products.*');
+            } elseif (in_array($request->sort, ['majniej', 'najwiecej'])) {
+                $direction = $request->sort == 'majniej' ? 'asc' : 'desc';
+                
+                $query->leftJoin('inventories', 'products.id', '=', 'inventories.product_id')
+                    ->select('products.*', DB::raw('SUM(inventories.quantity) as total_qty'))
+                    ->groupBy('products.id')
+                    ->orderBy('total_qty', $direction);
             }
         }
 
@@ -49,34 +49,53 @@ class InventoryController extends Controller
             'products' => $products
         ]);
     }
-    
-    public function show(string $id)
-    {
-        //
-    }
 
-    public function edit(Product $product)
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'size' => 'required|string|max:50',
+            'quantity' => 'required|integer|min:0',
+        ]);
+
+        
+        $inventory = Inventory::where('product_id', $request->product_id)
+            ->where('size', $request->size)
+            ->first();
+
+        if ($inventory) {
+            $inventory->increment('quantity', $request->quantity);
+        } else {
+            Inventory::create([
+                'product_id' => $request->product_id,
+                'size' => $request->size,
+                'quantity' => $request->quantity
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Rozmiar został dodany!');
     }
 
     public function update(Request $request)
     {
         $request->validate([
-            'id' => 'required|exists:products,id',
+            'id' => 'required|exists:inventories,id',
             'quantity' => 'required|integer|min:0',
         ]);
 
-        $product = Product::findOrFail($request->id);
-        $product->inventory()->updateOrCreate(
-            ['product_id' => $product->id],
-            ['quantity' => $request->quantity]
-        );
+        $inventory = Inventory::findOrFail($request->id);
+        $inventory->update([
+            'quantity' => $request->quantity
+        ]);
 
-        return redirect()->back()->with('success', 'Stan zaktualizowany!');
+        return redirect()->back()->with('success', 'Stan magazynowy został zaktualizowany!');
     }
 
-    public function store(Request $request) {
-        //   
-    }
+    public function destroy($id)
+{
+    $inventory = Inventory::findOrFail($id);
+    $inventory->delete();
+
+    return redirect()->back()->with('success', 'Rozmiar został usunięty z magazynu.');
+}
 }

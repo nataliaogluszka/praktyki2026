@@ -70,7 +70,7 @@
                             <div class="card border-1 shadow-sm address-card-selectable h-100"
                                 onclick="fillAddress(this)" data-street="{{ $address->street }}"
                                 data-number="{{ $address->house_number }}" data-postcode="{{ $address->postal_code }}"
-                                data-city="{{ $address->city }}">
+                                data-city="{{ $address->city }}" data-country="{{ $address->country }}">
                                 <div class="card-body p-3">
                                     <p class="mb-0 fw-bold">{{ $address->street }} {{ $address->house_number }}</p>
                                     <p class="text-muted mb-0 small">{{ $address->postal_code }} {{ $address->city }}
@@ -109,6 +109,11 @@
                                 <label class="form-label small text-muted">Miasto</label>
                                 <input type="text" name="shipping_city" id="shipping_city" class="form-control bg-light"
                                     required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label small text-muted">Kraj</label>
+                                <input type="text" name="country" id="country"
+                                    class="form-control bg-light" required>
                             </div>
 
                             @auth
@@ -199,6 +204,7 @@ function fillAddress(element) {
     document.getElementById('shipping_number').value = element.dataset.number;
     document.getElementById('shipping_postcode').value = element.dataset.postcode;
     document.getElementById('shipping_city').value = element.dataset.city;
+    document.getElementById('country').value = element.dataset.country;
 }
 
 document.querySelectorAll('input[name="shipping_method"]').forEach(radio => {

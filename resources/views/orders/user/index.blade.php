@@ -19,11 +19,11 @@
                         <span class="text-muted small d-block">ID Zamówienia</span>
                         <span class="fw-bold text-dark">#{{ $order->id }}</span>
                     </div>
-                    <div class="col-md-3 mb-2 mb-md-0">
+                    <div class="col-md-2 mb-2 mb-md-0">
                         <span class="text-muted small d-block">Data</span>
                         <span class="text-dark">{{ $order->created_at->format('d.m.Y') }}</span>
                     </div>
-                    <div class="col-md-3 mb-2 mb-md-0">
+                    <div class="col-md-2 mb-2 mb-md-0">
                         <span class="text-muted small d-block">Status</span>
                         <span
                             class="badge rounded-pill @if($order->status == 'przyjęte') bg-warning-subtle text-warning @elseif($order->status == 'w przygotowaniu') bg-primary-subtle text-primary-emphasis @elseif($order->status == 'wysłano') bg-success-subtle text-success @elseif($order->status == 'dostarczono') bg-secondary-subtle text-secondary @else bg-warning-subtle text-warning @endif">
@@ -34,6 +34,11 @@
                         <span class="text-muted small d-block">Suma</span>
                         <span class="fw-bold text-primary">{{ number_format($order->total_price, 2) }}
                             {{ $order->currency }}</span>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary border-0">
+                            Szczegóły
+                        </a>
                     </div>
                 </div>
             </div>

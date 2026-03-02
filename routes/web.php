@@ -119,6 +119,9 @@ Route::get('/inventories/list', [InventoryController::class, 'index'])->name('in
 
 Route::patch('/inventories/update', [InventoryController::class, 'update'])->name('inventory.update');
 
+Route::post('/inventories', [InventoryController::class, 'store'])->name('inventory.store');
+
+Route::delete('/inventories/{id}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
 
 
 
@@ -127,6 +130,8 @@ Route::get('/orders', [OrderController::class, 'userIndex'])->name('orders.user.
 Route::get('/orders/admin', [OrderController::class, 'index'])->name('orders.index') -> middleware('auth') -> middleware('can:isInventory');
 
 Route::patch('/orders/{order}/status', [OrderController::class, 'update'])->name('orders.update');
+
+Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show') -> middleware('auth');
 
 
 Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index') -> middleware('can:isAdmin');
@@ -141,3 +146,4 @@ Route::delete('/settings/shipping/{id}', [SettingsController::class, 'destroy'])
 Route::post('/products/{product}/opinions', [OpinionController::class, 'store'])->name('opinions.store')->middleware('auth');
 
 Route::delete('/opinions/{opinion}', [OpinionController::class, 'destroy'])->name('opinions.destroy')->middleware('auth');
+

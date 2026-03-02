@@ -39,6 +39,12 @@ class OrderController extends Controller
         return back()->with('success', 'Status zaktualizowany!');
     }
 
+    public function show(Order $order)
+    {
+        $order->load('orderItems');
+        return view('orders.show', compact('order'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */

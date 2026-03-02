@@ -43,36 +43,73 @@
             <button type="submit" class="btn btn-sm btn-primary shadow-sm px-3">Filtruj</button>
         </form>
     </div>
-    <table class="table table-hover">
+    <table class="table ">
         <thead>
             <tr>
                 <th scope="col" class="col-1">#</th>
-                <th scope="col" class="col-6">Nazwa</th>
-                <th scope="col" class="col-3">Stan</th>
-                <th scope="col" class="col-2">Zmień ilość na stanie</th>
+                <th scope="col" class="col-4">Nazwa produktu</th>
+                <th scope="col" class="col-2">Rozmiar</th>
+                <th scope="col" class="col-2">Stan</th>
+                <th scope="col" class="col-3">Akcje / Zmień ilość</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($products as $product)
-            <tr>
+            <tr class="table-secondary">
                 <th scope="row">{{ $product->id }}</th>
-                <td>{{ $product->name }}</td>
-                <td>{{ $product->inventory->quantity ?? 0 }}</td>
+                <td class="fw-bold">{{ $product->name }}</td>
+                <td colspan="2"></td>
                 <td>
-                    <form action="{{ route('inventory.update') }}" method="post"
-                        onsubmit="return confirm('Czy na pewno chcesz zmienić ilość tego produktu?')">
+                    <form action="{{ route('inventory.store') }}" method="POST" class="d-flex gap-1">
                         @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="id" value="{{ $product->id }}">
-                        <div class="input-group input-group-sm border-0" style="width: 120px;">
-                            <input type="number" name="quantity" value="{{ $product->inventory->quantity ?? 0 }}"
-                                min="0" class="form-control form-control-sm">
-                            <button type="submit" class="btn btn-outline-secondary btn-sm">Zmień</button>
-                        </div>
-                    </form>
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="text" name="size" placeholder="Rozmiar (np. XL)"
+                            class="form-control form-control-sm" style="width: 100px;" required>
+                        <input type="number" name="quantity" value="0" min="0" class="form-control form-control-sm"
+                            style="width: 70px;">
+                        <button type="submit" class="btn btn-sm btn-success">+</button>
                     </form>
                 </td>
             </tr>
+
+            @if($product->inventories && $product->inventories->count() > 0)
+            @foreach($product->inventories as $inv)
+            <tr>
+                <td></td>
+                <td class="text-end text-muted small">↳</td>
+                <td>
+                    <span class="badge bg-light text-dark border">{{ $inv->size }}</span>
+                </td>
+                <td>{{ $inv->quantity }}</td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <form action="{{ route('inventory.update') }}" method="post" class="d-flex gap-1">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="id" value="{{ $inv->id }}">
+                            <div class="input-group input-group-sm" style="width: 130px;">
+                                <input type="number" name="quantity" value="{{ $inv->quantity }}" min="0"
+                                    class="form-control">
+                                <button type="submit" class="btn btn-outline-secondary">Zapisz</button>
+                            </div>
+                        </form>
+
+                        <form action="{{ route('inventory.destroy', $inv->id) }}" method="POST"
+                            onsubmit="return confirm('Czy na pewno chcesz usunąć ten rozmiar z magazynu?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-outline-danger border-0">Usuń</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            @endforeach
+            @else
+            <tr>
+                <td colspan="5" class="text-center text-muted small py-1">Brak zdefiniowanych rozmiarów dla tego
+                    produktu.</td>
+            </tr>
+            @endif
             @endforeach
         </tbody>
     </table>
