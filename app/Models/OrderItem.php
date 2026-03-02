@@ -14,7 +14,8 @@ class OrderItem extends Model
         'quantity',
         'unit_price_gross',
         'tax_rate',
-        'returned_quantity'
+        'returned_quantity',
+        'size'
     ];
 
     public function order(): BelongsTo

@@ -99,6 +99,11 @@
                         <span class="fw-bold text-primary">{{ number_format($order->total_price, 2) }}
                             {{ $order->currency }}</span>
                     </div>
+                    <div class="col-md-2 text-end">
+                        <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary border-0">
+                            Szczegóły
+                        </a>
+                    </div>
                 </div>
             </div>
             @endforeach

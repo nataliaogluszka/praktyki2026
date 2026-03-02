@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ShippingMethod;
 use App\Models\Setting;
+use App\Models\Inventory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -47,6 +48,7 @@ class CheckoutController extends Controller
             'shipping_number' => 'required|string|max:20',
             'shipping_postcode' => 'required|string|max:10',
             'shipping_city' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
 
             'shipping_method_id' => 'required|exists:shipping_methods,id',
             'payment_method' => 'required|in:online,cod',
@@ -74,6 +76,17 @@ class CheckoutController extends Controller
         try {
             $address = $this->formatAddress($request);
 
+            if ($request->has('save_address') && Auth::check()) {
+                \App\Models\Address::create([
+                    'user_id' => Auth::id(),
+                    'street' => $request->shipping_street,
+                    'house_number' => $request->shipping_number, 
+                    'city' => $request->shipping_city,
+                    'postal_code' => $request->shipping_postcode, 
+                    'country' => $request->country ?? 'Polska',
+                ]);
+            }
+
             $order = Order::create([
                 'user_id'            => Auth::id(),
                 'total_price'        => $finalTotal,
@@ -87,17 +100,26 @@ class CheckoutController extends Controller
                 'billing_address'    => $address,
             ]);
 
-            foreach ($cart as $id => $item) {
+            
+            foreach ($cart as $inventoryId => $item) {
+                $inventory = Inventory::where('id', $inventoryId)->lockForUpdate()->first();
+                
+                if (!$inventory || $inventory->quantity < $item['quantity']) {
+                    throw new \Exception("Produkt {$item['name']} (rozmiar: {$item['size']}) nie jest już dostępny w żądanej ilości.");
+                }
+
+                $inventory->decrement('quantity', $item['quantity']);
+
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'product_id' => $id,
+                    'product_id' => $inventory->product_id, 
                     'product_name' => $item['name'],
+                    'size' => $item['size'], 
                     'quantity' => $item['quantity'],
                     'unit_price_gross' => $item['price'],
                     'tax_rate' => 23.00,
                 ]);
             }
-
             if (session()->has('coupon')) {
                 $couponData = session()->get('coupon');
                 

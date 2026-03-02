@@ -22,7 +22,8 @@ class Order extends Model
         'tracking_number',
         'billing_address',
         'shipping_address',
-        'discount_code'
+        'discount_code',
+        'internal_notes',
     ];
 
     protected $casts = [
@@ -43,7 +44,7 @@ class Order extends Model
     }
 
 
-    public function items(): HasMany
+    public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }

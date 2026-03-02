@@ -69,11 +69,11 @@
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm position-relative border-0">
-                @if($product->inventory && $product->inventory->quantity > 0)
-                    <span class="badge bg-success position-absolute top-0 end-0 m-2" style="z-index: 10;">Dostępny</span>
-                @else
-                    <span class="badge bg-danger position-absolute top-0 end-0 m-2" style="z-index: 10;">Brak</span>
-                @endif
+                @if($product->inventories->where('quantity', '>', 0)->count() > 0)
+    <span class="badge bg-success position-absolute top-0 end-0 m-2" style="z-index: 10;">Dostępny</span>
+@else
+    <span class="badge bg-danger position-absolute top-0 end-0 m-2" style="z-index: 10;">Brak</span>
+@endif
 
                 <div class="main-image-container">
                     @if($product->product_images && $product->product_images->count() > 0)
@@ -135,15 +135,33 @@
             <hr class="my-4">
 
             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                <form action="{{ route('cart.add', $product->id) }}" method="POST">
-                    @csrf
-                    <button class="btn btn-primary btn-lg px-4 me-md-2" type="submit">
-                        Dodaj do koszyka
-                    </button>
-                </form>
-                <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-lg px-4">
-                    Powrót
-                </a>
+                <form action="{{ route('cart.add', $product->id) }}" method="POST" id="addToCartForm">
+    @csrf
+    
+    <div class="mb-3">
+        <label for="inventory_id" class="form-label fw-bold">Wybierz rozmiar:</label>
+        <select name="inventory_id" id="inventory_id" class="form-select" required>
+            <option value="" disabled selected>-- Wybierz rozmiar --</option>
+            @foreach($product->inventories as $inv)
+                <option value="{{ $inv->id }}" {{ $inv->quantity <= 0 ? 'disabled' : '' }}>
+                    {{ $inv->size }}
+                </option>
+            @endforeach
+        </select>
+        <div class="invalid-feedback">
+            Proszę wybrać rozmiar.
+        </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+        <button class="btn btn-primary btn-lg px-4 me-md-2" type="submit" id="submitBtn" disabled>
+            Dodaj do koszyka
+        </button>
+        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-lg px-4">
+            Powrót
+        </a>
+    </div>
+</form>
             </div>
 
             <div class="mt-4">
@@ -253,6 +271,17 @@
                 document.querySelector('.thumbnail-img.active').classList.remove('active');
                 this.classList.add('active');
             });
+        });
+
+        const inventorySelect = document.getElementById('inventory_id');
+        const submitBtn = document.getElementById('submitBtn');
+
+        inventorySelect.addEventListener('change', function() {
+            if (this.value) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
         });
     });
 </script>

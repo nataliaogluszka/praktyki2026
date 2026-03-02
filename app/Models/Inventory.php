@@ -13,6 +13,7 @@ class Inventory extends Model
         'id',
         'product_id',
         'quantity',
+        'size'
     ];
 
     public function product() {

@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Models\Product;
-use App\Models\Category; // Dodaj ten import
+use App\Models\Category;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -17,8 +18,9 @@ class HomeController extends Controller
         $maxPrice = $request->query('max_price');
         $categoryId = $request->query('category');
         $availableOnly = $request->has('available_only');
+        $size = $request->query('size');
 
-        $query = Product::query()->with(['inventory', 'product_images']);
+        $query = Product::query()->with(['inventories', 'product_images']);
 
         $query->when($searchTerm, function ($query, $searchTerm) {
             $query->where(function ($q) use ($searchTerm) {
@@ -40,7 +42,15 @@ class HomeController extends Controller
         });
 
         $query->when($availableOnly, function ($q) {
-            return $q->whereHas('inventory', function ($innerQuery) {
+            return $q->whereHas('inventories', function ($innerQuery) {
+                $innerQuery->where('quantity', '>', 0);
+            });
+        });
+
+        $query->when($size, function ($q) use ($size) {
+            return $q->whereHas('inventories', function ($innerQuery) use ($size) {
+                $innerQuery->where('size', $size);
+                // Jeśli filtrowanie ma uwzględniać tylko dostępne rozmiary, odkomentuj linię niżej:
                 $innerQuery->where('quantity', '>', 0);
             });
         });
@@ -62,10 +72,13 @@ class HomeController extends Controller
         
         $categories = Category::whereNull('parent_id')->with('children.children')->get();
 
+        $sizes = DB::table('inventories')->whereNotNull('size')->distinct()->pluck('size');
+
         return view('home', [
             'products' => $products,
             'categories' => $categories,
-            'currentSort' => $sort
+            'currentSort' => $sort,
+            'sizes' => $sizes
         ]);
     }
 }
