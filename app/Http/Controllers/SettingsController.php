@@ -6,48 +6,84 @@ use Illuminate\Http\Request;
 use App\Models\ShippingMethod;
 use App\Models\Setting;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 class SettingsController extends Controller
 {
     public function index()
     {
         $shippingMethods = ShippingMethod::all();
-        $vatRate = Setting::where('key', 'vat_rate')->first()->value ?? 23;
-        return view('settings.index', compact('shippingMethods', 'vatRate'));
+    
+        // Pobieramy wszystkie ustawienia do tablicy [klucz => wartość]
+        $settings = Setting::pluck('value', 'key')->toArray();
+
+        return view('settings.index', compact('shippingMethods', 'settings'));
     }
 
     public function update(Request $request)
     {
-        foreach ($request->shipping as $id => $price) {
-            ShippingMethod::where('id', $id)->update(['price' => $price]);
+        // 1. Obsługa przesyłania Logo (zapis fizyczny)
+        if ($request->hasFile('shop_logo')) {
+            $request->validate([
+                'shop_logo' => 'required|image|mimes:png|max:2048',
+            ]);
+
+            $path = public_path('images/logo');
+
+            if (!File::isDirectory($path)) {
+                File::makeDirectory($path, 0777, true, true);
+            }
+
+            $request->file('shop_logo')->move($path, 'logo.png');
+            
+            Setting::updateOrCreate(
+                ['key' => 'shop_logo'], 
+                ['value' => 'images/logo/logo.png']
+            );
         }
 
-        Setting::where('key', 'vat_rate')->update(['value' => $request->vat_rate]);
+        // 2. Aktualizacja cen dostaw
+        if ($request->has('shipping')) {
+            foreach ($request->shipping as $id => $price) {
+                ShippingMethod::where('id', $id)->update(['price' => $price]);
+            }
+        }
+
+        // 3. Aktualizacja pozostałych ustawień tekstowych
+        // WAŻNE: Wykluczamy 'shop_logo', bo to obiekt pliku, nie tekst
+        $inputs = $request->except(['_token', '_method', 'shipping', 'shop_logo']);
+
+        foreach ($inputs as $key => $value) {
+            Setting::updateOrCreate(
+                ['key' => $key],
+                ['value' => $value ?? ''] // Zapisujemy pusty ciąg, jeśli pole jest puste
+            );
+        }
 
         return back()->with('success', 'Ustawienia zostały zapisane.');
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'price' => 'required|numeric|min:0',
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+        ]);
 
-    ShippingMethod::create([
-        'name' => $request->name,
-        'slug' => Str::slug($request->name),
-        'price' => $request->price,
-    ]);
+        ShippingMethod::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
+            'price' => $request->price,
+        ]);
 
-    return back()->with('success', 'Nowa metoda dostawy została dodana.');
-}
+        return back()->with('success', 'Nowa metoda dostawy została dodana.');
+    }
 
-public function destroy($id)
-{
-    $method = ShippingMethod::findOrFail($id);
-    $method->delete();
+    public function destroy($id)
+    {
+        $method = ShippingMethod::findOrFail($id);
+        $method->delete();
 
-    return back()->with('success', 'Metoda dostawy została usunięta.');
-}
+        return back()->with('success', 'Metoda dostawy została usunięta.');
+    }
 }

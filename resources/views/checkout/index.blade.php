@@ -196,28 +196,23 @@
 </div>
 
 <script>
-function fillAddress(element) {
-    document.querySelectorAll('.address-card-selectable').forEach(card => card.classList.remove('active'));
-    element.classList.add('active');
-
-    document.getElementById('shipping_street').value = element.dataset.street;
-    document.getElementById('shipping_number').value = element.dataset.number;
-    document.getElementById('shipping_postcode').value = element.dataset.postcode;
-    document.getElementById('shipping_city').value = element.dataset.city;
-    document.getElementById('country').value = element.dataset.country;
-}
-
-document.querySelectorAll('input[name="shipping_method"]').forEach(radio => {
+document.querySelectorAll('input[name="shipping_method_id"]').forEach(radio => {
     radio.addEventListener('change', function() {
         const shippingCost = parseFloat(this.dataset.cost);
-        const baseTotal = $total;
+        const baseTotal = {{ $total }};
         const grandTotal = baseTotal + shippingCost;
 
-        document.getElementById('shipping-cost-display').innerText = shippingCost.toFixed(2).replace(
-            '.', ',') + ' zł';
-        document.getElementById('grand-total-display').innerText = grandTotal.toFixed(2).replace('.',
-            ',') + ' zł';
+        document.getElementById('shipping-cost-display').innerText = 
+            shippingCost.toLocaleString('pl-PL', { minimumFractionDigits: 2 }) + ' zł';
+        document.getElementById('grand-total-display').innerText = 
+            grandTotal.toLocaleString('pl-PL', { minimumFractionDigits: 2 }) + ' zł';
     });
+});
+
+document.getElementById('checkout-form').addEventListener('submit', function() {
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Przetwarzanie...';
 });
 </script>
 @endsection

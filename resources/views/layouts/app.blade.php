@@ -8,8 +8,8 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('logo.png') }}">
+    <title>{{ $shopName }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo/logo.png') }}">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
@@ -49,14 +49,14 @@
         border-radius: 0 !important;
         max-width: 45px;
         padding: 0;
-        z-index: 0 !important; 
+        z-index: 0 !important;
     }
 
     .input-group form {
         display: flex;
     }
     </style>
-    
+
 </head>
 
 <body>
@@ -65,7 +65,8 @@
         <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="/">
-                    <img src="{{ asset(path: 'logo.png') }}" id="logo" style="width:40px;" class="mx-2">
+                    <img src="{{ asset(path: 'images/logo/logo.png') }}" id="logo" style="width:40px;" class="mx-2">
+                    {{ $shopName }}
                 </a>
 
                 <button class="navbar-toggler btn border-0" type="button" data-bs-toggle="collapse"
@@ -85,10 +86,12 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('categories.gender', 'kobieta') }}" class="nav-link px-0 px-md-3 {{ request()->routeIs('categories.gender') ? 'text-secondary active' : 'text-white' }}">Kobieta</a>
+                                    <a href="{{ route('categories.gender', 'kobieta') }}"
+                                        class="nav-link px-0 px-md-3 {{ request()->routeIs('categories.gender') ? 'text-secondary active' : 'text-white' }}">Kobieta</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('categories.gender', 'mezczyzna') }}" class="nav-link px-0 px-md-3 {{ request()->routeIs('categories.gender', 'mezczyzna') ? 'text-secondary active' : 'text-white' }}">Mężczyzna</a>
+                                    <a href="{{ route('categories.gender', 'mezczyzna') }}"
+                                        class="nav-link px-0 px-md-3 {{ request()->routeIs('categories.gender', 'mezczyzna') ? 'text-secondary active' : 'text-white' }}">Mężczyzna</a>
                                 </li>
                             </ul>
                         </div>
@@ -121,24 +124,29 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" href="{{ route('users.profile') }}">Mój profil</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('orders.user.index', Auth::user()) }}">Zamówienia</a></li>
-                                    
+                                    <li><a class="dropdown-item"
+                                            href="{{ route('orders.user.index', Auth::user()) }}">Zamówienia</a></li>
+
                                     @can('isAdmin')
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
                                     <li><a class="dropdown-item" href="/users/list">Użytkownicy</a></li>
                                     <li><a class="dropdown-item" href="{{ route('products.index') }}">Produkty</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('categories.index') }}">Kategorie</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('coupons.index') }}">Kody rabatowe</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('categories.index') }}">Kategorie</a>
+                                    </li>
+                                    <li><a class="dropdown-item" href="{{ route('coupons.index') }}">Kody rabatowe</a>
+                                    </li>
                                     @endcan
 
                                     @can('isInventory')
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="{{ route('orders.index') }}">Wszystkie zamówienia</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('inventories.index') }}">Magazyn</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('orders.index') }}">Wszystkie
+                                            zamówienia</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('inventories.index') }}">Magazyn</a>
+                                    </li>
                                     @endcan
 
                                     @can('isAdmin')
