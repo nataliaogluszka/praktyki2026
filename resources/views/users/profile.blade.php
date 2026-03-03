@@ -126,7 +126,7 @@
                             <div class="col-md-3 mb-2 mb-md-0">
                                 <span class="text-muted small d-block">Status</span>
                                 <span
-                                    class="badge rounded-pill @if($order->status == 'przyjęte') bg-warning-subtle text-warning @elseif($order->status == 'w przygotowaniu') bg-primary-subtle text-primary-emphasis @elseif($order->status == 'wysłano') bg-success-subtle text-success @elseif($order->status == 'dostarczono') bg-secondary-subtle text-secondary @else bg-warning-subtle text-warning @endif">
+                                    class="badge rounded-pill @if($order->status == 'Nieopłacone') bg-warning-subtle text-warning @elseif($order->status == 'Opłacone') bg-primary-subtle text-primary-emphasis @elseif($order->status == 'Wysłane') bg-success-subtle text-success @elseif($order->status == 'dostarczono') bg-secondary-subtle text-secondary @else bg-warning-subtle text-warning @endif">
                                     {{ $order->status }}
                                 </span>
                             </div>

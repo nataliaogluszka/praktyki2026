@@ -15,7 +15,7 @@
             @forelse($orders as $order)
             <div class="list-group-item p-4 border-0 border-bottom">
                 <div class="row align-items-center">
-                    <div class="col-md-4 mb-2 mb-md-0">
+                    <div class="col-md-2 mb-2 mb-md-0">
                         <span class="text-muted small d-block">ID Zamówienia</span>
                         <span class="fw-bold text-dark">#{{ $order->id }}</span>
                     </div>
@@ -26,7 +26,7 @@
                     <div class="col-md-2 mb-2 mb-md-0">
                         <span class="text-muted small d-block">Status</span>
                         <span
-                            class="badge rounded-pill @if($order->status == 'przyjęte') bg-warning-subtle text-warning @elseif($order->status == 'w przygotowaniu') bg-primary-subtle text-primary-emphasis @elseif($order->status == 'wysłano') bg-success-subtle text-success @elseif($order->status == 'dostarczono') bg-secondary-subtle text-secondary @else bg-warning-subtle text-warning @endif">
+                            class="badge rounded-pill @if($order->status == 'Nieopłacone') bg-warning-subtle text-warning @elseif($order->status == 'Opłacone') bg-primary-subtle text-primary-emphasis @elseif($order->status == 'Wysłane') bg-success-subtle text-success @elseif($order->status == 'dostarczono') bg-secondary-subtle text-secondary @else bg-warning-subtle text-warning @endif">
                             {{ $order->status }}
                         </span>
                     </div>
@@ -35,10 +35,35 @@
                         <span class="fw-bold text-primary">{{ number_format($order->total_price, 2) }}
                             {{ $order->currency }}</span>
                     </div>
-                    <div class="col-md-2 text-end">
-                        <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary border-0">
-                            Szczegóły
-                        </a>
+                    <div class="col-md-4 text-end px-3" style="max-width: 300px; margin-left: auto;">
+                        <div class="d-flex flex-column gap-1">
+                            <div class="d-flex gap-1 justify-content-end">
+                                <a href="{{ route('orders.show', $order->id) }}"
+                                    class="btn btn-xs btn-outline-primary border-1 px-2 py-1"
+                                    style="font-size: 0.75rem;">
+                                    Szczegóły
+                                </a>
+
+                                <form action="{{ route('cart.reorder', $order->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-xs btn-outline-secondary border-1 px-2 py-1"
+                                        style="font-size: 0.75rem;">
+                                        Kup ponownie
+                                    </button>
+                                </form>
+                            </div>
+
+                            @if(strtolower(trim($order->status)) == 'nieopłacone')
+                            <form action="{{ route('checkout.repay', $order->id) }}" method="POST" class="mt-1">
+                                @csrf
+                                
+                                <button type="submit" class="btn btn-sm btn-warning fw-bold py-1"
+                                    style="font-size: 0.8rem; letter-spacing: 0.3px;">
+                                    Dokończ płatność
+                                </button>
+                            </form>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Coupon;
 use Carbon\Carbon;
 use App\Models\Inventory;
+use App\Models\Order;
 
 class CartController extends Controller
 {
@@ -202,4 +203,37 @@ class CartController extends Controller
         return redirect()->back()->with('success', 'Produkt został usunięty z koszyka.');
     }
 
+    public function reorder(Order $order)
+{
+    // Ładujemy relację używając Twojej nazwy: orderItems
+    $order->load('orderItems.product'); 
+
+    $cart = session()->get('cart', []);
+
+    // Zmieniono z items na orderItems
+    foreach ($order->orderItems as $item) {
+        $inventory = Inventory::where('product_id', $item->product_id)
+            ->where('size', $item->size)
+            ->first();
+
+        if ($inventory && $inventory->quantity > 0) {
+            $cart[$inventory->id] = [
+                "name" => $item->product_name,
+                "size" => $item->size,
+                "quantity" => 1, 
+                "price" => $item->unit_price_gross,
+                // Próba pobrania zdjęcia z relacji produktu
+                "image" => $item->product->product_images->first()?->path ?? 'default.jpg',
+                "inventory_id" => $inventory->id,
+            ];
+        }
+    }
+
+    if (empty($cart)) {
+        return redirect()->back()->with('error', 'Produkty z tego zamówienia nie są już dostępne.');
+    }
+
+    session()->put('cart', $cart);
+    return redirect()->route('cart.index')->with('success', 'Produkty zostały dodane do koszyka.');
+}
 } 

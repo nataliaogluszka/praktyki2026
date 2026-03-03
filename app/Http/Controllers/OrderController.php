@@ -33,7 +33,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:w przygotowaniu,wysłano',
+            'status' => 'required|in:Opłacone,Wysłane',
         ]);
         $order->update(['status' => $request->status]);
         return back()->with('success', 'Status zaktualizowany!');
@@ -45,6 +45,18 @@ class OrderController extends Controller
         return view('orders.show', compact('order'));
     }
 
+    public function noteUpdate(Request $request, Order $order)
+    {
+        $request->validate([
+            'internal_notes' => 'nullable|string|max:5000',
+        ]);
+
+        $order->update([
+            'internal_notes' => $request->internal_notes
+        ]);
+
+        return back()->with('success', 'Notatka została zaktualizowana.');
+    }
     /**
      * Show the form for creating a new resource.
      */

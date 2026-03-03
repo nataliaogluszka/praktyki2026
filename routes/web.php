@@ -133,6 +133,8 @@ Route::patch('/orders/{order}/status', [OrderController::class, 'update'])->name
 
 Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show') -> middleware('auth');
 
+Route::patch('/orders/{order}', [OrderController::class, 'noteUpdate']) ->name('note.update') -> middleware('auth');
+
 
 Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index') -> middleware('can:isAdmin');
 
@@ -147,3 +149,9 @@ Route::post('/products/{product}/opinions', [OpinionController::class, 'store'])
 
 Route::delete('/opinions/{opinion}', [OpinionController::class, 'destroy'])->name('opinions.destroy')->middleware('auth');
 
+
+
+Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
+Route::post('/cart/reorder/{order}', [CartController::class, 'reorder'])->name('cart.reorder');
+Route::post('/checkout/repay/{order}', [CheckoutController::class, 'repay'])->name('checkout.repay');
