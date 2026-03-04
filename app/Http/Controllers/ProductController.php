@@ -12,13 +12,45 @@ use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
+
     public function index(Request $request)
     {
-        return view('products.index', [          
-            'products' => Product::with(['category', 'product_images'])->paginate(8),
-            'categories' => Category::whereNull('parent_id')->with('children.children')->get()
-        ]);
+        $query = Product::query()->with(['category.parent', 'product_images']);
+
+        // 1. Filtrowanie po kategorii
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // 2. Sortowanie
+        switch ($request->sort) {
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $products = $query->paginate(10)->withQueryString(); // withQueryString zachowuje filtry przy zmianie stron
+        $categories = Category::whereNull('parent_id')->with('children.children')->get();
+
+        return view('products.index', compact('products', 'categories'));
     }
+    // public function index(Request $request)
+    // {
+    //     return view('products.index', [          
+    //         'products' => Product::with(['category', 'product_images'])->paginate(8),
+    //         'categories' => Category::whereNull('parent_id')->with('children.children')->get()
+    //     ]);
+    // }
     
     public function show(string $id)
     {

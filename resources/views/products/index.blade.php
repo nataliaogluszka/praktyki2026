@@ -19,21 +19,49 @@
         {{ session('error') }}
     </div>
     @endif
-    <div class="col-12 text-end">
-        <button type="button" class="btn btn-outline-primary border-0 mb-3" data-bs-toggle="modal"
-            data-bs-target="#addProductModal">
-            Dodaj nowy produkt
-        </button>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+            <button type="button" class="btn btn-outline-primary border-0" data-bs-toggle="modal"
+                data-bs-target="#addProductModal">
+                Dodaj nowy produkt
+            </button>
+            <form action="{{ route('products.index') }}" method="GET" class="d-flex gap-2 col-md-5">
+                    <select name="category" class="form-select form-select-sm shadow-sm">
+                        <option value="">Wszystkie kategorie</option>
+                        @foreach($categories as $mainCat)
+                        <optgroup label="{{ $mainCat->name }}">
+                            @foreach($mainCat->children as $subCat)
+                            @foreach($subCat->children as $leafCat)
+                            <option value="{{ $leafCat->id }}"
+                                {{ request('category') == $leafCat->id ? 'selected' : '' }}>
+                                {{ $subCat->name }} > {{ $leafCat->name }}
+                            </option>
+                            @endforeach
+                            @endforeach
+                        </optgroup>
+                        @endforeach
+                    </select>
+                    <select name="sort" class="form-select form-select-sm shadow-sm">
+                        <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Najnowsze</option>
+                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Cena: rosnąco
+                        </option>
+                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Cena:
+                            malejąco</option>
+                        <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Nazwa: A-Z
+                        </option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-primary shadow-sm px-3">Filtruj</button>
+                
+            </form>
     </div>
     <table class="table table-hover">
         <thead>
             <tr>
-                <th scope="col" class="col-md-1">Zdjęcie</th>
-                <th scope="col" class="col-md-3">Nazwa</th>
-                <th scope="col" class="col-md-2">Cena</th>
-                <th scope="col" class="col-md-2">Kategoria</th>
-                <th scope="col" class="col-md-2">Stan</th>
-                <th scope="col" class="col-md-2">Akcje</th>
+                <th scope="col">Zdjęcie</th>
+                <th scope="col">Nazwa</th>
+                <th scope="col">Cena</th>
+                <th scope="col">Kategoria</th>
+                <th scope="col">Stan</th>
+                <th scope="col">Akcje</th>
             </tr>
         </thead>
         <tbody>
@@ -51,7 +79,18 @@
                 </td>
                 <td>{{ $product->name }}</td>
                 <td>{{ number_format($product->price, 2) }} zł</td>
-                <td>{{ $product->category ? $product->category->name : 'Brak kategorii' }}</td>
+                <td>
+                    @if($product->category)
+                    {{-- Sprawdzamy czy kategoria ma rodzica (subkategoria -> kategoria główna) --}}
+                    @if($product->category->parent)
+                    {{ $product->category->parent->name }} / {{ $product->category->name }}
+                    @else
+                    {{ $product->category->name }}
+                    @endif
+                    @else
+                    <span class="text-muted">Brak kategorii</span>
+                    @endif
+                </td>
                 <td>{{ $product->inventory ? $product->inventory->quantity : 'Brak danych' }}</td>
                 <td>
                     <div class="d-flex align-items-center">

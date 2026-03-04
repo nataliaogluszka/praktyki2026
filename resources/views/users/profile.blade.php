@@ -49,6 +49,49 @@
             <div class="mb-5">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="fw-bold mb-0 text-secondary text-uppercase"
+                        style="font-size: 0.85rem; letter-spacing: 1px;">Zgody Marketingowe</h4>
+                </div>
+                <div class="card border-1 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <form action="{{ route('profile.marketing.update') }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="newsletter" id="consent_newsletter" 
+                                    {{ $user->marketingConsents->newsletter ? 'checked' : '' }}>
+                                <label class="form-check-label small" for="consent_newsletter">
+                                    Chcę otrzymywać newsletter i informacje o promocjach e-mailem.
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="sms_marketing" id="consent_sms"
+                                    {{ $user->marketingConsents->sms_marketing ? 'checked' : '' }}>
+                                <label class="form-check-label small" for="consent_sms">
+                                    Wyrażam zgodę na otrzymywanie powiadomień SMS o ofertach specjalnych.
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" name="data_processing_third_party" id="consent_third_party"
+                                    {{ $user->marketingConsents->data_processing_third_party ? 'checked' : '' }}>
+                                <label class="form-check-label small" for="consent_third_party">
+                                    Wyrażam zgodę na przetwarzanie danych w celach analitycznych przez partnerów.
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold">
+                                Aktualizuj zgody
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0 text-secondary text-uppercase"
                         style="font-size: 0.85rem; letter-spacing: 1px;">Zapisane Adresy</h4>
                     <button class="btn btn-sm btn-link text-decoration-none fw-bold" data-bs-toggle="modal"
                         data-bs-target="#addAddressModal">

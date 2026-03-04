@@ -98,4 +98,14 @@ class OrderController extends Controller
 
         return back()->with('success', 'Zamówienie zostało anulowane.');
     }
+
+    public function destroyAdmin($id)
+    {
+        $order = Order::findOrFail($id);
+
+        $order->delete();
+
+        return redirect()->route('orders.index')
+            ->with('success', 'Zamówienie zostało pomyślnie usunięte.');
+    }
 }

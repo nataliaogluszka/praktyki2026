@@ -15,6 +15,7 @@ use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\OpinionController;
+use App\Http\Controllers\LogController;
 
 
 Route::get('/about', function(){
@@ -39,6 +40,8 @@ Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name(
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
 Route::get('/profile', [UserController::class, 'show'])->name('users.profile') -> middleware('auth');
+
+Route::put('/profile/marketing', [ProfileController::class, 'updateMarketing']) ->name('profile.marketing.update') -> middleware('auth');
 
 Route::middleware(['auth'])->group(function () {
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
@@ -155,3 +158,10 @@ Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('c
 Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 Route::post('/cart/reorder/{order}', [CartController::class, 'reorder'])->name('cart.reorder');
 Route::post('/checkout/repay/{order}', [CheckoutController::class, 'repay'])->name('checkout.repay');
+
+Route::delete('/orders/{id}', [OrderController::class, 'destroyAdmin'])->name('orders.destroyAdmin');
+
+
+Route::get('/logs', [LogController::class, 'index'])
+    ->name('logs.index')
+    ->middleware(['auth', 'can:isAdmin']);

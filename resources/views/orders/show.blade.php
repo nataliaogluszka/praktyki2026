@@ -6,6 +6,17 @@
         <h4 class="fw-bold mb-0 text-secondary text-uppercase" style="font-size: 0.85rem; letter-spacing: 1px;">
             Szczegóły zamówienia #{{ $order->id }}
         </h4>
+
+        @can('isAdmin')
+        <form action="{{ route('orders.destroyAdmin', $order->id) }}" method="POST"
+            onsubmit="return confirm('Czy na pewno chcesz usunąć to zamówienie?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-outline-danger border-0 btn-sm rounded-3 px-3">
+                <i class="bi bi-trash"></i> Usuń zamówienie
+            </button>
+        </form>
+        @endcan
     </div>
 
     <div class="card shadow-sm rounded-4 mb-4">
