@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\DB;
+use App\Models\Product;
+use App\Models\Order;
+use App\Observers\AuditObserver;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -25,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrap();
+
+        Product::observe(AuditObserver::class);
+        Order::observe(AuditObserver::class);
 
         try {
         

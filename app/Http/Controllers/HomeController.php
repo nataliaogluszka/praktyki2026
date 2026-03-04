@@ -68,7 +68,7 @@ class HomeController extends Controller
             return $q->orderBy('created_at', 'desc');
         });
 
-        $products = $query->paginate(6)->withQueryString();
+        $products = $query->paginate(9)->withQueryString();
         
         $categories = Category::whereNull('parent_id')->with('children.children')->get();
 

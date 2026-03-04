@@ -59,4 +59,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class);
     }
+
+    public function marketingConsents()
+    {
+        return $this->hasOne(UserMarketingConsent::class)->withDefault();
+    }
 }

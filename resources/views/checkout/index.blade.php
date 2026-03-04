@@ -165,6 +165,35 @@
                         </div>
                     </div>
                 </div>
+                <div class="card cart-card mb-4 shadow-sm">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3 small-caps">Zgody i regulamin</h5>
+        
+        <div class="form-check mb-2">
+            <input class="form-check-input @error('terms_accepted') is-invalid @enderror" 
+                   type="checkbox" name="terms_accepted" id="terms_accepted" required>
+            <label class="form-check-label small" for="terms_accepted">
+                Akceptuję <a href="/regulamin" target="_blank">regulamin</a> sklepu internetowego *
+            </label>
+            @error('terms_accepted')
+                <div class="invalid-feedback">Musisz zaakceptować regulamin.</div>
+            @enderror
+        </div>
+
+        <div class="form-check mb-2">
+            <input class="form-check-input @error('privacy_accepted') is-invalid @enderror" 
+                   type="checkbox" name="privacy_accepted" id="privacy_accepted" required>
+            <label class="form-check-label small" for="privacy_accepted">
+                Zapoznałem się z <a href="/polityka-prywatnosci" target="_blank">polityką prywatności</a> *
+            </label>
+            @error('privacy_accepted')
+                <div class="invalid-feedback">To pole jest wymagane.</div>
+            @enderror
+        </div>
+
+        <p class="text-muted" style="font-size: 0.75rem;">* Pola wymagane</p>
+    </div>
+</div>
             </form>
         </div>
 

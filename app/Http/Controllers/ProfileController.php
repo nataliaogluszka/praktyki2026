@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Address;
+use App\Http\Controllers\User;
 
 class ProfileController extends Controller
 {
@@ -59,5 +60,23 @@ class ProfileController extends Controller
         }
         $address->delete();
         return back()->with('success', 'Adres został usunięty.');
+    }
+
+    public function updateMarketing(Request $request)
+    {
+        /** @var User $user */
+
+        $user = Auth::user();
+        
+        $user->marketingConsents()->updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'newsletter' => $request->has('newsletter'),
+                'sms_marketing' => $request->has('sms_marketing'),
+                'data_processing_third_party' => $request->has('data_processing_third_party'),
+            ]
+        );
+
+        return back()->with('success', 'Zgody marketingowe zostały zaktualizowane.');
     }
 }
