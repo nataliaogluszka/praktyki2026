@@ -80,4 +80,10 @@ class Order extends Model
         return $query->where('status', 'processing')
                     ->whereNull('shipping_date');
     }
+
+    public function returns()
+    {
+        return $this->hasMany(OrderReturn::class, 'order_id');
+    }
+    
 }

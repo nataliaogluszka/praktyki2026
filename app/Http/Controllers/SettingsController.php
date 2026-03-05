@@ -14,7 +14,6 @@ class SettingsController extends Controller
     {
         $shippingMethods = ShippingMethod::all();
     
-        // Pobieramy wszystkie ustawienia do tablicy [klucz => wartość]
         $settings = Setting::pluck('value', 'key')->toArray();
 
         return view('settings.index', compact('shippingMethods', 'settings'));
@@ -22,7 +21,6 @@ class SettingsController extends Controller
 
     public function update(Request $request)
     {
-        // 1. Obsługa przesyłania Logo (zapis fizyczny)
         if ($request->hasFile('shop_logo')) {
             $request->validate([
                 'shop_logo' => 'required|image|mimes:png|max:2048',
@@ -42,21 +40,17 @@ class SettingsController extends Controller
             );
         }
 
-        // 2. Aktualizacja cen dostaw
         if ($request->has('shipping')) {
             foreach ($request->shipping as $id => $price) {
                 ShippingMethod::where('id', $id)->update(['price' => $price]);
             }
         }
-
-        // 3. Aktualizacja pozostałych ustawień tekstowych
-        // WAŻNE: Wykluczamy 'shop_logo', bo to obiekt pliku, nie tekst
         $inputs = $request->except(['_token', '_method', 'shipping', 'shop_logo']);
 
         foreach ($inputs as $key => $value) {
             Setting::updateOrCreate(
                 ['key' => $key],
-                ['value' => $value ?? ''] // Zapisujemy pusty ciąg, jeśli pole jest puste
+                ['value' => $value ?? ''] 
             );
         }
 

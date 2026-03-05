@@ -11,7 +11,6 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // Metoda wyświetlająca listę
     public function index(Request $request)
     {
         $query = Order::query();
@@ -107,5 +106,20 @@ class OrderController extends Controller
 
         return redirect()->route('orders.index')
             ->with('success', 'Zamówienie zostało pomyślnie usunięte.');
+    }
+
+    public function confirmDelivery(Order $order)
+    {
+        // Sprawdź, czy zamówienie należy do zalogowanego użytkownika
+        if ($order->user_id !== auth::id()) {
+            abort(403);
+        }
+
+        // Zmień status na 'dostarczono' (pisownia małą literą, zgodnie z Twoim widokiem Blade)
+        $order->update([
+            'status' => 'dostarczono'
+        ]);
+
+        return back()->with('success', 'Potwierdzono odbiór zamówienia. Teraz możesz dokonać zwrotu, jeśli jest taka potrzeba.');
     }
 }

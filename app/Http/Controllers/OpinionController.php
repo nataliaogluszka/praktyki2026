@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class OpinionController extends Controller
 {
-    // Metoda wyświetlająca listę
     public function index(Request $request)
     {
         //

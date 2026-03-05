@@ -58,7 +58,10 @@
 
                         </div>
                         <div class="col-md-3 text-end">
-                            <span class="price-tag">{{ number_format($item['price'], 2, ',', ' ') }} zł</span>
+                            <span class="price-tag">
+                                <!-- {{ number_format($item['price'], 2, ',', ' ') }} zł -->
+                                {{ \App\Helpers\CurrencyHelper::convert($item['price']) }}
+                            </span>
                         </div>
                         <div class="col-md-2 text-end">
                             <form action="{{ route('cart.remove', $id) }}" method="POST">
@@ -102,14 +105,14 @@
 
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">Wartość produktów (brutto)</span>
-                        <span>{{ number_format($total, 2, ',', ' ') }} zł</span>
+                        <span>{{ \App\Helpers\CurrencyHelper::convert($total)}} zł</span>
                     </div>
 
                     @if(session()->has('coupon'))
                     <div class="d-flex justify-content-between mb-2 text-success align-items-center">
                         <span>Zniżka ({{ session('coupon')['code'] }}):</span>
                         <div class="d-flex align-items-center">
-                            <span class="me-1">-{{ number_format($discount, 2, ',', ' ') }} zł</span>
+                            <span class="me-1">-{{ \App\Helpers\CurrencyHelper::convert($discount) }}</span>
 
                             <form action="{{ route('cart.coupon.remove') }}" method="POST" class="m-0">
                                 @csrf
@@ -128,13 +131,12 @@
                     @endif
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted small">W tym podatek VAT (23%)</span>
-                        <span class="small text-secondary">{{ number_format($taxAmount, 2, ',', ' ') }} zł</span>
+                        <span class="small text-secondary">{{ \App\Helpers\CurrencyHelper::convert($taxAmount) }}</span>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fw-bold">Do zapłaty</span>
-                        <span class="price-tag fs-3 text-nowrap">{{ number_format($totalAfterDiscount, 2, ',', ' ') }}
-                            zł</span>
+                        <span class="price-tag fs-3 text-nowrap">{{ \App\Helpers\CurrencyHelper::convert($totalAfterDiscount) }}</span>
                     </div>
                     <a href="{{ route('checkout.index') }}" class="btn btn-primary-custom w-100 fw-bold">KUPUJĘ I
                         PŁACĘ</a>

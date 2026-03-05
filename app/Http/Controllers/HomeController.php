@@ -50,7 +50,6 @@ class HomeController extends Controller
         $query->when($size, function ($q) use ($size) {
             return $q->whereHas('inventories', function ($innerQuery) use ($size) {
                 $innerQuery->where('size', $size);
-                // Jeśli filtrowanie ma uwzględniać tylko dostępne rozmiary, odkomentuj linię niżej:
                 $innerQuery->where('quantity', '>', 0);
             });
         });

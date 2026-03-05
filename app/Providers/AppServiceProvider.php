@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Category;
+use App\Models\Coupon;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Pagination\Paginator;
@@ -9,6 +11,10 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\DB;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\Setting;
+use App\Models\ShippingMethod;
+use App\Models\Inventory;
+use App\Models\User;
 use App\Observers\AuditObserver;
 
 
@@ -31,10 +37,16 @@ class AppServiceProvider extends ServiceProvider
 
         Product::observe(AuditObserver::class);
         Order::observe(AuditObserver::class);
+        Setting::observe(AuditObserver::class);
+        ShippingMethod::observe(AuditObserver::class);
+        Inventory::observe(AuditObserver::class);
+        User::observe(AuditObserver::class);
+        Coupon::observe(AuditObserver::class);
+        Category::observe(AuditObserver::class);
 
         try {
         
-            $settings = \App\Models\Setting::whereIn('key', [
+            $settings = Setting::whereIn('key', [
                 'payment_api_key', 
                 'payment_api_secret'
             ])->pluck('value', 'key');
@@ -49,7 +61,6 @@ class AppServiceProvider extends ServiceProvider
 
         $shopName = DB::table('settings')->where('key', 'shop_name')->value('value');
     
-        // Udostępnia zmienną $shopName dla wszystkich plików .blade.php
         View::share('shopName', $shopName ?? 'Domyślna Nazwa');
     }
 }
