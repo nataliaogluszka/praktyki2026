@@ -16,6 +16,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\OpinionController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\ReturnController;
 
 
 Route::get('/about', function(){
@@ -84,11 +85,6 @@ Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])
 Route::patch('/inventory/update', [InventoryController::class, 'update'])->name('inventory.update');
 
 
-
-
-// Route::get('/cart', function(){
-//     return view('cart');
-// });
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 
@@ -165,3 +161,17 @@ Route::delete('/orders/{id}', [OrderController::class, 'destroyAdmin'])->name('o
 Route::get('/logs', [LogController::class, 'index'])
     ->name('logs.index')
     ->middleware(['auth', 'can:isAdmin']);
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/returns', [ReturnController::class, 'index'])->name('returns.user.index');
+    Route::get('/returns/create/{order}', [ReturnController::class, 'create'])->name('returns.create');
+    Route::post('/returns/store', [ReturnController::class, 'store'])->name('returns.store');
+});
+
+Route::patch('/orders/{order}/confirm', [OrderController::class, 'confirmDelivery'])
+    ->name('orders.confirm_delivery')
+    ->middleware('auth');
+
+Route::get('/returns/admin', [ReturnController::class, 'indexAdmin'])->name('returns.index')->middleware('can:isAdmin');
+Route::patch('/returns/{return}/status', [ReturnController::class, 'updateStatus'])->name('returns.update')->middleware('can:isAdmin');

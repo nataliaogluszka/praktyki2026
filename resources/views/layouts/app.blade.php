@@ -124,8 +124,8 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" href="{{ route('users.profile') }}">Mój profil</a></li>
-                                    <li><a class="dropdown-item"
-                                            href="{{ route('orders.user.index', Auth::user()) }}">Zamówienia</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('orders.user.index', Auth::user()) }}">Zamówienia</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('returns.user.index', Auth::user()) }}">Zwroty</a></li>
 
                                     @can('isAdmin')
                                     <li>
@@ -143,8 +143,8 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="{{ route('orders.index') }}">Wszystkie
-                                            zamówienia</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('orders.index') }}">Wszystkie zamówienia</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('returns.index') }}">Wszystkie zwroty</a></li>
                                     <li><a class="dropdown-item" href="{{ route('inventories.index') }}">Magazyn</a>
                                     </li>
                                     @endcan
@@ -196,7 +196,7 @@
             <div class="container text-center text-md-start">
                 <div class="row text-center text-md-start">
                     <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                        <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Nazwa Sklepu</h5>
+                        <h5 class="text-uppercase mb-4 font-weight-bold text-warning">{{ $shopName }}</h5>
                         <p>Zapewniamy najwyższą jakość produktów sportowych od 2024 roku. Twoja pasja to nasza misja.
                         </p>
                     </div>
@@ -204,8 +204,9 @@
                     <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
                         <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Sklep</h5>
                         <p><a href="/home" class="text-light text-decoration-none">Wszystkie produkty</a></p>
-                        <p><a href="/" class="text-light text-decoration-none">Promocje</a></p>
-                        <p><a href="#" class="text-light text-decoration-none">Nowości</a></p>
+                        <p><a href="{{ route('categories.gender', 'mezczyzna') }}" class="text-light text-decoration-none">Mężczyzna</a></p>
+                        <p><a href="{{ route('categories.gender', 'kobieta') }}" class="text-light text-decoration-none">Kobieta</a></p>
+                        <p><a href="/" class="text-light text-decoration-none">Nowości</a></p>
                     </div>
 
                     <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
@@ -221,9 +222,6 @@
                 <div class="row align-items-center">
                     <div class="col-md-7 col-lg-8">
                         <p>© 2026 Wszelkie prawa zastrzeżone: <strong>Twoja Marka</strong></p>
-                    </div>
-                    <div class="col-md-5 col-lg-4 text-center">
-                        <small class="text-muted">Metody płatności: Visa, Mastercard, Blik</small>
                     </div>
                 </div>
             </div>

@@ -78,10 +78,8 @@
                                     onchange="this.form.submit()" 
                                     {{ $order->status == 'Nieopłacone' ? 'disabled' : '' }}>
                                     
-                                    {{-- Jeśli status to Nieopłacone, to jest to jedyna dostępna opcja --}}
                                     <option value="Nieopłacone" {{ $order->status == 'Nieopłacone' ? 'selected' : '' }}>Nieopłacone</option>
                                     
-                                    {{-- Pozostałe opcje są widoczne tylko jeśli zamówienie jest już opłacone --}}
                                     <option value="Opłacone" {{ $order->status == 'Opłacone' ? 'selected' : '' }}>Opłacone</option>
                                     <option value="Wysłane" {{ $order->status == 'Wysłane' ? 'selected' : '' }}>Wysłane</option>
                                     <option value="dostarczono" {{ $order->status == 'dostarczono' ? 'selected' : '' }}>Dostarczono</option>

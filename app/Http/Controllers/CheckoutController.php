@@ -89,7 +89,6 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            // Tworzymy zamówienie - status 'Nieopłacone' dla płatności online
             $order = Order::create([
                 'user_id'            => Auth::id(),
                 'total_price'        => $finalTotal,
@@ -101,7 +100,7 @@ class CheckoutController extends Controller
                 'is_completed'       => false,
                 'shipping_address'   => $address,
                 'billing_address'    => $address,
-                'currency'           => 'PLN', // Upewnij się, że masz tę kolumnę
+                'currency'           => 'PLN',
             ]);
 
             foreach ($cart as $inventoryId => $item) {
@@ -225,11 +224,9 @@ class CheckoutController extends Controller
             return redirect()->back()->with('info', 'To zamówienie jest już opłacone.');
         }
 
-        // Pobieranie klucza z Twoich ustawień w bazie
         Stripe::setApiKey(config('services.stripe.secret') ?? env('STRIPE_SECRET'));
 
         $lineItems = [];
-        // Używamy Twojej nazwy relacji
         $order->load('orderItems');
 
         foreach ($order->orderItems as $item) {

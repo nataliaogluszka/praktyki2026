@@ -17,12 +17,10 @@ class ProductController extends Controller
     {
         $query = Product::query()->with(['category.parent', 'product_images']);
 
-        // 1. Filtrowanie po kategorii
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
-        // 2. Sortowanie
         switch ($request->sort) {
             case 'price_asc':
                 $query->orderBy('price', 'asc');
@@ -39,18 +37,12 @@ class ProductController extends Controller
                 break;
         }
 
-        $products = $query->paginate(10)->withQueryString(); // withQueryString zachowuje filtry przy zmianie stron
+        $products = $query->paginate(10)->withQueryString(); 
         $categories = Category::whereNull('parent_id')->with('children.children')->get();
 
         return view('products.index', compact('products', 'categories'));
     }
-    // public function index(Request $request)
-    // {
-    //     return view('products.index', [          
-    //         'products' => Product::with(['category', 'product_images'])->paginate(8),
-    //         'categories' => Category::whereNull('parent_id')->with('children.children')->get()
-    //     ]);
-    // }
+
     
     public function show(string $id)
     {
@@ -95,7 +87,6 @@ class ProductController extends Controller
             'name', 'price', 'description', 'category_id'
         ]));
 
-        // Usuwanie wybranych zdjęć
         if ($request->filled('delete_images')) {
             $imagesToDelete = $product->product_images()
                 ->whereIn('id', $request->delete_images)
@@ -110,7 +101,6 @@ class ProductController extends Controller
             }
         }
 
-        // Dodawanie nowych zdjęć
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $imageName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();

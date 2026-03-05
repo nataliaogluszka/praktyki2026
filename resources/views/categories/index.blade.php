@@ -3,7 +3,6 @@
 @section('content')
 <div class="container py-4">
     <div class="row g-4">
-        {{-- LEWA KOLUMNA: TABELA --}}
         <div class="col-lg-8">
             <div class="card shadow-sm border-0" style="border-radius: 15px;">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
@@ -23,7 +22,6 @@
                             </thead>
                             <tbody>
                                 @foreach($categories as $mainCat)
-                                {{-- POZIOM 1 --}}
                                 <tr class="table-sm border-bottom-0">
                                     <td class="ps-4 text-muted small">#{{ $mainCat->id }}</td>
                                     <td>
@@ -61,7 +59,6 @@
                                     </td>
                                 </tr>
 
-                                {{-- POZIOM 2 --}}
                                 @foreach($mainCat->children as $subCat)
                                 <tr class="border-bottom-0">
                                     <td class="ps-4 text-muted small">{{ $subCat->id }}</td>
@@ -106,7 +103,6 @@
                                     </td>
                                 </tr>
 
-                                {{-- POZIOM 3 --}}
                                 @foreach($subCat->children as $leafCat)
                                 <tr>
                                     <td class="ps-4 text-muted small">{{ $leafCat->id }}</td>
@@ -160,7 +156,6 @@
             </div>
         </div>
 
-        {{-- PRAWA KOLUMNA: FORMULARZ --}}
         <div class="col-lg-4">
             <div class="card shadow-sm border-0 sticky-top" style="border-radius: 15px; top: 20px; z-index: 1000;">
                 <div class="card-body p-4">
@@ -222,7 +217,7 @@
 </div>
 
 <script>
-// Automatyczne generowanie Sluga
+    
 function generateSlug(text) {
     if (document.getElementById('editBadge').classList.contains('d-none')) {
         const slug = text.toLowerCase()
@@ -232,7 +227,7 @@ function generateSlug(text) {
     }
 }
 
-// Przełączanie w tryb edycji
+
 function editCategory(id, name, slug, parentId) {
     document.getElementById('formTitle').innerText = 'Edycja kategorii';
     document.getElementById('submitBtn').classList.replace('btn-primary', 'btn-warning');
@@ -241,7 +236,7 @@ function editCategory(id, name, slug, parentId) {
     document.getElementById('cancelBtn').classList.remove('d-none');
 
     const form = document.getElementById('categoryForm');
-    form.action = `/categories/${id}`; // Upewnij się, że URL pasuje do route('categories.update')
+    form.action = `/categories/${id}`; 
     document.getElementById('methodField').innerHTML = '@method("PUT")';
 
     document.getElementById('catName').value = name;
@@ -254,7 +249,6 @@ function editCategory(id, name, slug, parentId) {
     });
 }
 
-// Powrót do dodawania
 function resetForm() {
     document.getElementById('formTitle').innerText = 'Dodaj kategorię';
     document.getElementById('submitBtn').classList.replace('btn-warning', 'btn-primary');

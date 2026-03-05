@@ -26,9 +26,9 @@
                         <select name="size" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">Wszystkie</option>
                             @foreach($sizes as $size)
-                                <option value="{{ $size }}" {{ request('size') == $size ? 'selected' : '' }}>
-                                    {{ $size }}
-                                </option>
+                            <option value="{{ $size }}" {{ request('size') == $size ? 'selected' : '' }}>
+                                {{ $size }}
+                            </option>
                             @endforeach
                         </select>
                     </div>
@@ -138,7 +138,6 @@
                             @endif
                         </div>
 
-
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title fw-bold text-dark"><a
                                     href="{{ route('products.show', $product->id) }}"
@@ -148,20 +147,15 @@
                             </p>
 
                             <div class="d-flex justify-content-between align-items-center mt-3">
-                                <span
-                                    class="fs-5 fw-bold text-primary">{{ number_format($product->price, 2, ',', ' ') }}
-                                    zł</span>
-                                
-                                <button class="btn btn-primary btn-sm px-3 open-size-modal" 
-                                        type="button"
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#sizeModal"
-                                        data-product-id="{{ $product->id }}"
-                                        data-product-name="{{ $product->name }}"
-                                        data-inventories="{{ json_encode($product->inventories->where('quantity', '>', 0)->values()) }}">
+                                <span class="fs-5 fw-bold text-primary">{{ $product->formatted_price }}</span>
+
+                                <button class="btn btn-primary btn-sm px-3 open-size-modal" type="button"
+                                    data-bs-toggle="modal" data-bs-target="#sizeModal"
+                                    data-product-id="{{ $product->id }}" data-product-name="{{ $product->name }}"
+                                    data-inventories="{{ json_encode($product->inventories->where('quantity', '>', 0)->values()) }}">
                                     Dodaj do koszyka
                                 </button>
-                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -192,11 +186,12 @@
                     <div class="mb-3">
                         <label for="inventory_id" class="form-label">Rozmiary</label>
                         <select name="inventory_id" id="inventory_id" class="form-select" required>
-                            </select>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="quantity" class="form-label">Ilość</label>
-                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" required>
+                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1"
+                            required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -209,9 +204,9 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     var sizeModal = document.getElementById('sizeModal');
-    sizeModal.addEventListener('show.bs.modal', function (event) {
+    sizeModal.addEventListener('show.bs.modal', function(event) {
         var button = event.relatedTarget;
         var productId = button.getAttribute('data-product-id');
         var productName = button.getAttribute('data-product-name');
@@ -222,11 +217,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var form = sizeModal.querySelector('#addToCartForm');
 
         var quantityInput = sizeModal.querySelector('#quantity');
-        quantityInput.value = 1; 
-        quantityInput.closest('.mb-3').style.display = 'none'; 
+        quantityInput.value = 1;
+        quantityInput.closest('.mb-3').style.display = 'none';
 
         modalTitle.textContent = productName;
-        
+
         form.action = "{{ route('cart.add', ':id') }}".replace(':id', productId);
 
         inventorySelect.innerHTML = '';
@@ -238,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        inventories.forEach(function (inventory) {
+        inventories.forEach(function(inventory) {
             var option = document.createElement('option');
             option.value = inventory.id;
             option.text = inventory.size;

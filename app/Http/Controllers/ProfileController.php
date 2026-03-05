@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Address;
-use App\Http\Controllers\User;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
-    // Wyświetlanie profilu
     public function index()
     {
           /** @var \App\Models\User $user */
@@ -35,7 +34,6 @@ class ProfileController extends Controller
         return back()->with('success', 'Dane zostały zaktualizowane.');
     }
 
-    // Dodawanie adresu
     public function storeAddress(Request $request)
     {
         $validated = $request->validate([

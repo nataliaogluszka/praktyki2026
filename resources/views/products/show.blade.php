@@ -119,9 +119,14 @@
             <h1 class="display-5 fw-bold">{{ $product->name }}</h1>
 
             <div class="mb-3">
-                <span class="fs-2 text-primary fw-bold">{{ number_format($product->price, 2) }} zł</span><br>
-                <span class="text-secondary opacity-75 fs-5">VAT:
-                    {{ number_format($product->price * ($vatRate/100), 2 )}} zł</span>
+                <span class="fs-2 text-primary fw-bold">
+                    <!-- {{ number_format($product->price, 2) }} zł -->
+                    {{ $product->formatted_price }}
+                </span><br>
+                <span class="text-secondary opacity-75 fs-5">
+                    <!-- VAT: {{ number_format($product->price * ($vatRate/100), 2 )}} zł -->
+                    VAT: {{ $product->formatted_vat }}
+                </span>
             </div>
 
             <div>

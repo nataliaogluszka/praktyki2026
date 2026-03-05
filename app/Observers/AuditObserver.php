@@ -11,7 +11,6 @@ class AuditObserver
 {
     public function updated(Model $model)
     {
-        // Pobieramy tylko te pola, które faktycznie się zmieniły
         $changes = $model->getDirty();
         
         if (empty($changes)) return;
@@ -19,25 +18,36 @@ class AuditObserver
         $oldValues = [];
         $newValues = [];
 
+        $ignoredColumns = ['updated_at', 'created_at', 'deleted_at'];
+
         foreach ($changes as $column => $newValue) {
-            // Opcjonalnie: filtrujemy tylko ważne kolumny (np. price, status)
-            if (in_array($column, ['price', 'status', 'stock', 'total_price'])) {
+            if (!in_array($column, $ignoredColumns)) {
                 $oldValues[$column] = $model->getOriginal($column);
                 $newValues[$column] = $newValue;
             }
         }
 
         if (!empty($newValues)) {
-            AuditLog::create([
-                'user_id' => Auth::id(),
-                'auditable_type' => get_class($model),
-                'auditable_id' => $model->id,
-                'event' => 'updated',
-                'old_values' => $oldValues,
-                'new_values' => $newValues,
-                'url' => Request::fullUrl(),
-                'ip_address' => Request::ip(),
-            ]);
+            $this->saveLog($model, 'updated', $oldValues, $newValues);
         }
+    }
+
+    public function deleted(Model $model)
+    {
+        $this->saveLog($model, 'deleted', $model->toArray(), null);
+    }
+
+    protected function saveLog(Model $model, string $event, ?array $old, ?array $new)
+    {
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'auditable_type' => get_class($model),
+            'auditable_id' => $model->id,
+            'event' => $event,
+            'old_values' => $old,
+            'new_values' => $new,
+            'url' => Request::fullUrl(),
+            'ip_address' => Request::ip(),
+        ]);
     }
 }

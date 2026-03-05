@@ -202,7 +202,7 @@
 
 <script>
 function editCoupon(coupon) {
-    console.log(coupon); // Dla debugowania w konsoli
+    console.log(coupon); 
 
     document.getElementById('formTitle').innerText = 'Edycja kodu';
     document.getElementById('submitBtn').innerText = 'Aktualizuj kod';
@@ -213,17 +213,14 @@ function editCoupon(coupon) {
     form.action = `/coupons/${coupon.id}`;
     document.getElementById('methodField').innerHTML = '@method("PUT")';
 
-    // Mapowanie pól - upewnij się, że ID pasują do nazw w HTML
     document.getElementById('couponCode').value = coupon.code || '';
     document.getElementById('couponType').value = coupon.type || 'fixed';
     document.getElementById('couponValue').value = coupon.value || '';
     document.getElementById('minCartValue').value = coupon.min_cart_value || '';
     document.getElementById('usageLimit').value = coupon.usage_limit || '';
 
-    // Status (checkbox)
     document.getElementById('isActive').checked = parseInt(coupon.is_active) === 1;
 
-    // Obsługa dat (konwersja formatu bazy danych na datetime-local)
     if (coupon.starts_at) {
         document.getElementById('startsAt').value = coupon.starts_at.slice(0, 16).replace(' ', 'T');
     } else {

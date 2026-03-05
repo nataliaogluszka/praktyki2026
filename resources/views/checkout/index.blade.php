@@ -144,7 +144,7 @@
                                         {{ $loop->first ? 'checked' : '' }}>
                                     {{ $method->name }}
                                 </div>
-                                <span class="fw-bold">{{ number_format($method->price, 2, ',', ' ') }} zł</span>
+                                <span class="fw-bold">{{ \App\Helpers\CurrencyHelper::convert($method->price) }}</span>
                             </label>
                             @endforeach
                         </div>
@@ -165,35 +165,36 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="card cart-card mb-4 shadow-sm">
-    <div class="card-body">
-        <h5 class="fw-bold mb-3 small-caps">Zgody i regulamin</h5>
-        
-        <div class="form-check mb-2">
-            <input class="form-check-input @error('terms_accepted') is-invalid @enderror" 
-                   type="checkbox" name="terms_accepted" id="terms_accepted" required>
-            <label class="form-check-label small" for="terms_accepted">
-                Akceptuję <a href="/regulamin" target="_blank">regulamin</a> sklepu internetowego *
-            </label>
-            @error('terms_accepted')
-                <div class="invalid-feedback">Musisz zaakceptować regulamin.</div>
-            @enderror
-        </div>
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3 small-caps">Zgody i regulamin</h5>
+                        
+                        <div class="form-check mb-2">
+                            <input class="form-check-input @error('terms_accepted') is-invalid @enderror" 
+                                   type="checkbox" name="terms_accepted" id="terms_accepted" required>
+                            <label class="form-check-label small" for="terms_accepted">
+                                Akceptuję <a href="/regulamin" target="_blank">regulamin</a> sklepu internetowego *
+                            </label>
+                            @error('terms_accepted')
+                                <div class="invalid-feedback">Musisz zaakceptować regulamin.</div>
+                            @enderror
+                        </div>
 
-        <div class="form-check mb-2">
-            <input class="form-check-input @error('privacy_accepted') is-invalid @enderror" 
-                   type="checkbox" name="privacy_accepted" id="privacy_accepted" required>
-            <label class="form-check-label small" for="privacy_accepted">
-                Zapoznałem się z <a href="/polityka-prywatnosci" target="_blank">polityką prywatności</a> *
-            </label>
-            @error('privacy_accepted')
-                <div class="invalid-feedback">To pole jest wymagane.</div>
-            @enderror
-        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input @error('privacy_accepted') is-invalid @enderror" 
+                                   type="checkbox" name="privacy_accepted" id="privacy_accepted" required>
+                            <label class="form-check-label small" for="privacy_accepted">
+                                Zapoznałem się z <a href="/polityka-prywatnosci" target="_blank">polityką prywatności</a> *
+                            </label>
+                            @error('privacy_accepted')
+                                <div class="invalid-feedback">To pole jest wymagane.</div>
+                            @enderror
+                        </div>
 
-        <p class="text-muted" style="font-size: 0.75rem;">* Pola wymagane</p>
-    </div>
-</div>
+                        <p class="text-muted" style="font-size: 0.75rem;">* Pola wymagane</p>
+                    </div>
+                </div>
             </form>
         </div>
 
@@ -203,17 +204,19 @@
                     <h5 class="fw-bold mb-4">Podsumowanie</h5>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted small">Produkty</span>
-                        <span>{{ number_format($total, 2, ',', ' ') }} zł</span>
+                        <span>{{ \App\Helpers\CurrencyHelper::convert($total) }}</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3">
                         <span class="text-muted small">Dostawa</span>
-                        <span id="shipping-cost-display">15,00 zł</span>
+                        <span id="shipping-cost-display">
+                            {{ \App\Helpers\CurrencyHelper::convert($shippingMethods->first()->price ?? 0) }}
+                        </span>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fw-bold">Do zapłaty</span>
                         <span class="price-tag fs-3 text-primary" id="grand-total-display">
-                            {{ number_format($total + 15, 2, ',', ' ') }} zł
+                            {{ \App\Helpers\CurrencyHelper::convert($total + ($shippingMethods->first()->price ?? 0)) }}
                         </span>
                     </div>
                     <button type="submit" form="checkout-form"
@@ -225,16 +228,46 @@
 </div>
 
 <script>
+const currencySettings = {
+    code: '{{ \App\Models\Setting::where("key", "shop_currency")->first()->value ?? "PLN" }}',
+    rate: {{ 
+        \App\Models\Setting::where("key", "exchange_rates")->first() 
+        ? (json_decode(\App\Models\Setting::where("key", "exchange_rates")->first()->value, true)[\App\Models\Setting::where("key", "shop_currency")->first()->value ?? "PLN"] ?? 1)
+        : 1 
+    }},
+    symbols: { 'PLN': 'zł', 'EUR': '€', 'USD': '$', 'GBP': '£' }
+};
+
+function fillAddress(card) {
+    document.querySelectorAll('.address-card-selectable').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+
+    document.getElementById('shipping_street').value = card.dataset.street;
+    document.getElementById('shipping_number').value = card.dataset.number;
+    document.getElementById('shipping_postcode').value = card.dataset.postcode;
+    document.getElementById('shipping_city').value = card.dataset.city;
+    document.getElementById('country').value = card.dataset.country;
+}
+
 document.querySelectorAll('input[name="shipping_method_id"]').forEach(radio => {
     radio.addEventListener('change', function() {
-        const shippingCost = parseFloat(this.dataset.cost);
-        const baseTotal = {{ $total }};
-        const grandTotal = baseTotal + shippingCost;
+        const shippingPln = parseFloat(this.dataset.cost);
+        const baseTotalPln = parseFloat('{{ $total }}');
+        const grandTotalPln = baseTotalPln + shippingPln;
 
-        document.getElementById('shipping-cost-display').innerText = 
-            shippingCost.toLocaleString('pl-PL', { minimumFractionDigits: 2 }) + ' zł';
-        document.getElementById('grand-total-display').innerText = 
-            grandTotal.toLocaleString('pl-PL', { minimumFractionDigits: 2 }) + ' zł';
+        let shippingFormatted, totalFormatted;
+
+        if (currencySettings.code === 'PLN') {
+            shippingFormatted = shippingPln.toLocaleString('pl-PL', { minimumFractionDigits: 2 }) + ' zł';
+            totalFormatted = grandTotalPln.toLocaleString('pl-PL', { minimumFractionDigits: 2 }) + ' zł';
+        } else {
+            const symbol = currencySettings.symbols[currencySettings.code] || currencySettings.code;
+            shippingFormatted = (shippingPln * currencySettings.rate).toFixed(2) + ' ' + symbol;
+            totalFormatted = (grandTotalPln * currencySettings.rate).toFixed(2) + ' ' + symbol;
+        }
+
+        document.getElementById('shipping-cost-display').innerText = shippingFormatted;
+        document.getElementById('grand-total-display').innerText = totalFormatted;
     });
 });
 

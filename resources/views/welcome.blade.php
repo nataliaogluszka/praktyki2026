@@ -40,8 +40,11 @@
                     </p>
 
                     <div class="d-flex justify-content-between align-items-center mt-3">
-                        <span class="fs-5 fw-bold text-primary">{{ number_format($product->price, 2, ',', ' ') }}
-                            zł</span>
+                        <span class="fs-5 fw-bold text-primary">
+                            <!-- {{ number_format($product->price, 2, ',', ' ') }}
+                            zł -->
+                             {{ $product->formatted_price }}
+                        </span>
                         <form action="{{ route('cart.add', $product->id) }}" method="POST">
                             @csrf
                             <button class="btn btn-primary btn-sm px-3" type="submit">

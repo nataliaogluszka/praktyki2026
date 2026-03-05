@@ -32,7 +32,7 @@
                             @error('shop_logo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <div class="form-text text-danger small">Wymagany format: PNG. Plik zostanie zapisany jako logo.png</div>
+                            <div class="form-text text-danger small">Wymagany format: PNG</div>
                         </div>
 
                         <div class="mb-3">
@@ -44,6 +44,24 @@
                             <label class="small fw-bold">Domena</label>
                             <input type="text" name="shop_domain" value="{{ $settings['shop_domain'] ?? '' }}" class="form-control" placeholder="example.com">
                         </div>
+
+                        <div class="row g-2">
+                <div class="col-6">
+                    <label class="small fw-bold">Język domyślny</label>
+                    <select name="shop_language" class="form-select">
+                        <option value="pl" {{ ($settings['shop_language'] ?? 'pl') == 'pl' ? 'selected' : '' }}>Polski</option>
+                        <option value="en" {{ ($settings['shop_language'] ?? 'pl') == 'en' ? 'selected' : '' }}>English</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <label class="small fw-bold">Waluta</label>
+                    <select name="shop_currency" class="form-select">
+                        <option value="PLN" {{ ($settings['shop_currency'] ?? 'PLN') == 'PLN' ? 'selected' : '' }}>PLN</option>
+                        <option value="EUR" {{ ($settings['shop_currency'] ?? 'PLN') == 'EUR' ? 'selected' : '' }}>EUR</option>
+                        <option value="USD" {{ ($settings['shop_currency'] ?? 'PLN') == 'USD' ? 'selected' : '' }}>USD</option>
+                    </select>
+                </div>
+            </div>
                     </div>
                 </div>
             </div>

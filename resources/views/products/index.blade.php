@@ -81,7 +81,6 @@
                 <td>{{ number_format($product->price, 2) }} zł</td>
                 <td>
                     @if($product->category)
-                    {{-- Sprawdzamy czy kategoria ma rodzica (subkategoria -> kategoria główna) --}}
                     @if($product->category->parent)
                     {{ $product->category->parent->name }} / {{ $product->category->name }}
                     @else
