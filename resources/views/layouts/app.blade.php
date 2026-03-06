@@ -85,13 +85,19 @@
                                         Wszystkie produkty
                                     </a>
                                 </li>
+
                                 <li class="nav-item">
                                     <a href="{{ route('categories.gender', 'kobieta') }}"
-                                        class="nav-link px-0 px-md-3 {{ request()->routeIs('categories.gender') ? 'text-secondary active' : 'text-white' }}">Kobieta</a>
+                                        class="nav-link px-0 px-md-3 {{ (request()->routeIs('categories.gender') && request()->route('gender') == 'kobieta') ? 'text-secondary active' : 'text-white' }}">
+                                        Kobieta
+                                    </a>
                                 </li>
+
                                 <li class="nav-item">
                                     <a href="{{ route('categories.gender', 'mezczyzna') }}"
-                                        class="nav-link px-0 px-md-3 {{ request()->routeIs('categories.gender', 'mezczyzna') ? 'text-secondary active' : 'text-white' }}">Mężczyzna</a>
+                                        class="nav-link px-0 px-md-3 {{ (request()->routeIs('categories.gender') && request()->route('gender') == 'mezczyzna') ? 'text-secondary active' : 'text-white' }}">
+                                        Mężczyzna
+                                    </a>
                                 </li>
                             </ul>
                         </div>
@@ -124,8 +130,10 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" href="{{ route('users.profile') }}">Mój profil</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('orders.user.index', Auth::user()) }}">Zamówienia</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('returns.user.index', Auth::user()) }}">Zwroty</a></li>
+                                    <li><a class="dropdown-item"
+                                            href="{{ route('orders.user.index', Auth::user()) }}">Zamówienia</a></li>
+                                    <li><a class="dropdown-item"
+                                            href="{{ route('returns.user.index', Auth::user()) }}">Zwroty</a></li>
 
                                     @can('isAdmin')
                                     <li>
@@ -143,8 +151,10 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="{{ route('orders.index') }}">Wszystkie zamówienia</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('returns.index') }}">Wszystkie zwroty</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('orders.index') }}">Wszystkie
+                                            zamówienia</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('returns.index') }}">Wszystkie
+                                            zwroty</a></li>
                                     <li><a class="dropdown-item" href="{{ route('inventories.index') }}">Magazyn</a>
                                     </li>
                                     @endcan
@@ -204,8 +214,10 @@
                     <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
                         <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Sklep</h5>
                         <p><a href="/home" class="text-light text-decoration-none">Wszystkie produkty</a></p>
-                        <p><a href="{{ route('categories.gender', 'mezczyzna') }}" class="text-light text-decoration-none">Mężczyzna</a></p>
-                        <p><a href="{{ route('categories.gender', 'kobieta') }}" class="text-light text-decoration-none">Kobieta</a></p>
+                        <p><a href="{{ route('categories.gender', 'mezczyzna') }}"
+                                class="text-light text-decoration-none">Mężczyzna</a></p>
+                        <p><a href="{{ route('categories.gender', 'kobieta') }}"
+                                class="text-light text-decoration-none">Kobieta</a></p>
                         <p><a href="/" class="text-light text-decoration-none">Nowości</a></p>
                     </div>
 

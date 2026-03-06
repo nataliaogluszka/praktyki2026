@@ -46,9 +46,7 @@ class ReturnController extends Controller
             ->with('success', 'Zgłoszenie zwrotu zostało wysłane pomyślnie.');
     }
 
-    /**
-     * Logika biznesowa sprawdzająca możliwość zwrotu.
-     */
+    
     private function isEligibleForReturn(Order $order)
     {
         $isDelivered = strtolower(trim($order->status)) === 'dostarczono';
