@@ -3,66 +3,76 @@
 @section('content')
 
 <style>
-    .rating-select {
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: flex-end;
-    }
-    .rating-select input { display: none; }
-    .rating-select label {
-        cursor: pointer;
-        font-size: 1.5rem;
-        color: #ddd;
-        transition: color 0.2s;
-        margin-right: 5px;
-    }
-    .rating-select input:checked~label,
-    .rating-select label:hover,
-    .rating-select label:hover~label { color: #ffc107; }
-    .rating-select label:before { content: '★'; }
+.rating-select {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
 
-    .main-image-container {
-        width: 100%;
-        height: 400px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #f8f9fa;
-        border-radius: 0.25rem;
-        overflow: hidden;
-    }
+.rating-select input {
+    display: none;
+}
 
-    .main-image {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-    }
+.rating-select label {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #ddd;
+    transition: color 0.2s;
+    margin-right: 5px;
+}
 
-    .product-thumbnails {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        overflow-x: auto;
-        padding-bottom: 5px;
-    }
+.rating-select input:checked~label,
+.rating-select label:hover,
+.rating-select label:hover~label {
+    color: #ffc107;
+}
 
-    .thumbnail-img {
-        width: 70px;
-        height: 70px;
-        object-fit: cover;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: all 0.2s;
-        border-radius: 0.25rem;
-    }
+.rating-select label:before {
+    content: '★';
+}
 
-    .thumbnail-img:hover {
-        border-color: #adb5bd;
-    }
+.main-image-container {
+    width: 100%;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
 
-    .thumbnail-img.active {
-        border-color: #0d6efd; 
-    }
+.main-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.product-thumbnails {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.thumbnail-img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    border-radius: 0.25rem;
+}
+
+.thumbnail-img:hover {
+    border-color: #adb5bd;
+}
+
+.thumbnail-img.active {
+    border-color: #0d6efd;
+}
 </style>
 
 <div class="container py-5">
@@ -70,35 +80,30 @@
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm position-relative border-0">
                 @if($product->inventories->where('quantity', '>', 0)->count() > 0)
-    <span class="badge bg-success position-absolute top-0 end-0 m-2" style="z-index: 10;">Dostępny</span>
-@else
-    <span class="badge bg-danger position-absolute top-0 end-0 m-2" style="z-index: 10;">Brak</span>
-@endif
+                <span class="badge bg-success position-absolute top-0 end-0 m-2" style="z-index: 10;">Dostępny</span>
+                @else
+                <span class="badge bg-danger position-absolute top-0 end-0 m-2" style="z-index: 10;">Brak</span>
+                @endif
 
                 <div class="main-image-container">
                     @if($product->product_images && $product->product_images->count() > 0)
-                        <img src="{{ asset('images/products/' . $product->product_images->first()->path) }}" 
-                             class="main-image" 
-                             id="mainProductImage"
-                             alt="{{ $product->name }}">
+                    <img src="{{ asset('images/products/' . $product->product_images->first()->path) }}"
+                        class="main-image" id="mainProductImage" alt="{{ $product->name }}">
                     @else
-                        <img src="{{ asset('images/products/default.jpg') }}" 
-                             class="main-image" 
-                             id="mainProductImage"
-                             alt="Brak zdjęcia">
+                    <img src="{{ asset('images/products/default.jpg') }}" class="main-image" id="mainProductImage"
+                        alt="Brak zdjęcia">
                     @endif
                 </div>
             </div>
 
             @if($product->product_images && $product->product_images->count() > 1)
-                <div class="product-thumbnails">
-                    @foreach($product->product_images as $index => $image)
-                        <img src="{{ asset('images/products/' . $image->path) }}" 
-                             class="thumbnail-img {{ $index === 0 ? 'active' : '' }}" 
-                             data-image-path="{{ asset('images/products/' . $image->path) }}"
-                             alt="Thumbnail {{ $index + 1 }}">
-                    @endforeach
-                </div>
+            <div class="product-thumbnails">
+                @foreach($product->product_images as $index => $image)
+                <img src="{{ asset('images/products/' . $image->path) }}"
+                    class="thumbnail-img {{ $index === 0 ? 'active' : '' }}"
+                    data-image-path="{{ asset('images/products/' . $image->path) }}" alt="Thumbnail {{ $index + 1 }}">
+                @endforeach
+            </div>
             @endif
         </div>
 
@@ -141,32 +146,32 @@
 
             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
                 <form action="{{ route('cart.add', $product->id) }}" method="POST" id="addToCartForm">
-    @csrf
-    
-    <div class="mb-3">
-        <label for="inventory_id" class="form-label fw-bold">Wybierz rozmiar:</label>
-        <select name="inventory_id" id="inventory_id" class="form-select" required>
-            <option value="" disabled selected>-- Wybierz rozmiar --</option>
-            @foreach($product->inventories as $inv)
-                <option value="{{ $inv->id }}" {{ $inv->quantity <= 0 ? 'disabled' : '' }}>
-                    {{ $inv->size }}
-                </option>
-            @endforeach
-        </select>
-        <div class="invalid-feedback">
-            Proszę wybrać rozmiar.
-        </div>
-    </div>
+                    @csrf
 
-    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-        <button class="btn btn-primary btn-lg px-4 me-md-2" type="submit" id="submitBtn" disabled>
-            Dodaj do koszyka
-        </button>
-        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-lg px-4">
-            Powrót
-        </a>
-    </div>
-</form>
+                    <div class="mb-3">
+                        <label for="inventory_id" class="form-label fw-bold">Wybierz rozmiar:</label>
+                        <select name="inventory_id" id="inventory_id" class="form-select" required>
+                            <option value="" disabled selected>-- Wybierz rozmiar --</option>
+                            @foreach($product->inventories as $inv)
+                            <option value="{{ $inv->id }}" {{ $inv->quantity <= 0 ? 'disabled' : '' }}>
+                                {{ $inv->size }}
+                            </option>
+                            @endforeach
+                        </select>
+                        <div class="invalid-feedback">
+                            Proszę wybrać rozmiar.
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        <button class="btn btn-primary btn-lg px-4 me-md-2" type="submit" id="submitBtn" disabled>
+                            Dodaj do koszyka
+                        </button>
+                        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-lg px-4">
+                            Powrót
+                        </a>
+                    </div>
+                </form>
             </div>
 
             <div class="mt-4">
@@ -181,12 +186,30 @@
         </div>
     </div>
 
+    @if($product->attributes && $product->attributes->count() > 0)
+    <div class="mt-4">
+        <h5 class="fw-bold mb-3">Specyfikacja:</h5>
+        <div class="table-responsive">
+            <table class="table table-sm table-borderless w-auto">
+                <tbody>
+                    @foreach($product->attributes as $attribute)
+                    <tr>
+                        <td class="text-muted pe-4" style="width: 150px;">{{ $attribute->name }}:</td>
+                        <td class="fw-semibold">{{ $attribute->value }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
     <hr class="my-5">
 
     <div class="row">
         <div class="mb-3">
             @auth
-            <div class="card mb-3 border-light shadow-sm">
+            <div class="card mb-3 border shadow-sm">
                 <div class="card-header bg-light text-primary">Dodaj opinię</div>
                 <div class="card-body">
                     <form action="{{ route('opinions.store', $product->id) }}" method="POST">
@@ -205,7 +228,7 @@
                             </div>
                             <div class="col-lg-11">
                                 <textarea name="comment" rows="1" class="form-control form-control-sm border-0 bg-light"
-                                    placeholder="Dodaj krótki komentarz..." required></textarea>
+                                    placeholder="Dodaj krótki komentarz..."></textarea>
                             </div>
                             <div class="col-lg-1 text-end">
                                 <button type="submit" class="btn btn-dark btn-sm px-4">Wyślij</button>
@@ -264,30 +287,30 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const mainImage = document.getElementById('mainProductImage');
-        const thumbnails = document.querySelectorAll('.thumbnail-img');
+document.addEventListener('DOMContentLoaded', function() {
+    const mainImage = document.getElementById('mainProductImage');
+    const thumbnails = document.querySelectorAll('.thumbnail-img');
 
-        thumbnails.forEach(thumbnail => {
-            thumbnail.addEventListener('click', function () {
-                const newImagePath = this.getAttribute('data-image-path');
-                mainImage.src = newImagePath;
+    thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+            const newImagePath = this.getAttribute('data-image-path');
+            mainImage.src = newImagePath;
 
-                document.querySelector('.thumbnail-img.active').classList.remove('active');
-                this.classList.add('active');
-            });
-        });
-
-        const inventorySelect = document.getElementById('inventory_id');
-        const submitBtn = document.getElementById('submitBtn');
-
-        inventorySelect.addEventListener('change', function() {
-            if (this.value) {
-                submitBtn.disabled = false;
-            } else {
-                submitBtn.disabled = true;
-            }
+            document.querySelector('.thumbnail-img.active').classList.remove('active');
+            this.classList.add('active');
         });
     });
+
+    const inventorySelect = document.getElementById('inventory_id');
+    const submitBtn = document.getElementById('submitBtn');
+
+    inventorySelect.addEventListener('change', function() {
+        if (this.value) {
+            submitBtn.disabled = false;
+        } else {
+            submitBtn.disabled = true;
+        }
+    });
+});
 </script>
 @endsection

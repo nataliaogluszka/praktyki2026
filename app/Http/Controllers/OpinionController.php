@@ -22,14 +22,14 @@ class OpinionController extends Controller
     {
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string|max:1000',
+            'comment' => 'nullable|string|max:1000', 
         ]);
 
         Opinion::create([
             'product_id' => $productId,
             'user_id' => Auth::id(),
             'rating' => $request->rating,
-            'comment' => $request->comment,
+            'comment' => $request->comment, 
         ]);
 
         return back()->with('success', 'Twoja opinia została dodana!');

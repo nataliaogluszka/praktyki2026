@@ -15,7 +15,7 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $query = Product::query()->with(['category.parent', 'product_images']);
+        $query = Product::query()->with(['category.parent', 'product_images', 'attributes']);
 
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
@@ -40,9 +40,102 @@ class ProductController extends Controller
         $products = $query->paginate(10)->withQueryString(); 
         $categories = Category::whereNull('parent_id')->with('children.children')->get();
 
-        return view('products.index', compact('products', 'categories'));
+        $existingAttributeNames = DB::table('product_attributes')->distinct()->pluck('name');
+
+        return view('products.index', compact('products', 'categories', 'existingAttributeNames'));
     }
 
+    public function update(Request $request, Product $product): RedirectResponse
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
+            'image' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'delete_images' => 'nullable|array',
+            'attr_names' => 'nullable|array',
+            'attr_values' => 'nullable|array',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $product->update($request->only([
+                'name', 'price', 'description', 'category_id'
+            ]));
+
+            // Obsługa atrybutów
+            $this->saveAttributes($product, $request);
+
+            // Obsługa usuwania zdjęć
+            if ($request->filled('delete_images')) {
+                $imagesToDelete = $product->product_images()
+                    ->whereIn('id', $request->delete_images)
+                    ->get();
+
+                foreach ($imagesToDelete as $image) {
+                    $path = public_path('images/products/' . $image->path);
+                    if (file_exists($path)) {
+                        unlink($path);
+                    }
+                    $image->delete();
+                }
+            }
+
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $imageName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('images/products'), $imageName);
+                $product->product_images()->create(['path' => $imageName]);
+            }
+
+            DB::commit();
+            return back()->with('success', 'Produkt zaktualizowany!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Błąd aktualizacji: ' . $e->getMessage());
+        }
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
+            'image' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048', 
+            'attr_names' => 'nullable|array',
+            'attr_values' => 'nullable|array',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $product = Product::create([
+                'name' => $request->name,
+                'price' => $request->price,
+                'description' => $request->description,
+                'category_id' => $request->category_id,
+            ]);
+
+            // Obsługa atrybutów
+            $this->saveAttributes($product, $request);
+
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $imageName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('images/products'), $imageName);
+                $product->product_images()->create(['path' => $imageName]);
+            }
+
+            DB::commit();
+            return back()->with('success', 'Produkt dodany!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Błąd zapisu: ' . $e->getMessage());
+        }
+    }
     
     public function show(string $id)
     {
@@ -71,85 +164,18 @@ class ProductController extends Controller
         return back()->with('success', 'Produkt został usunięty.');
     }
 
-    public function update(Request $request, Product $product): RedirectResponse
-    {
-        
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'delete_images' => 'nullable|array',
-        ]);
+    private function saveAttributes($product, $request) {
+        $product->attributes()->delete();
 
-        $product->update($request->only([
-            'name', 'price', 'description', 'category_id'
-        ]));
-
-        if ($request->filled('delete_images')) {
-            $imagesToDelete = $product->product_images()
-                ->whereIn('id', $request->delete_images)
-                ->get();
-
-            foreach ($imagesToDelete as $image) {
-                $path = public_path('images/products/' . $image->path);
-                if (file_exists($path)) {
-                    unlink($path);
+        if ($request->has('attr_names')) {
+            foreach ($request->attr_names as $index => $name) {
+                if (!empty($name) && !empty($request->attr_values[$index])) {
+                    $product->attributes()->create([
+                        'name' => $name,
+                        'value' => $request->attr_values[$index]
+                    ]);
                 }
-                $image->delete();
             }
         }
-
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $imageName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('images/products'), $imageName);
-            $product->product_images()->create(['path' => $imageName]);
-        }
-
-        return back()->with('success', 'Produkt zaktualizowany!');
     }
-
-    public function store(Request $request)
-    {
-        if ($request->hasFile('image')) {
-            Log::info('Plik otrzymany:', [$request->file('image')]);
-        } else {
-            Log::info('Brak pliku o nazwie "image" w żądaniu');
-        }
-
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'price' => 'required|numeric|min:0',
-        'description' => 'nullable|string',
-        'category_id' => 'required|exists:categories,id',
-        'image' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048', 
-    ]);
-
-    DB::beginTransaction();
-
-    try {
-        $product = Product::create([
-            'name' => $request->name,
-            'price' => $request->price,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-        ]);
-
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $imageName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('images/products'), $imageName);
-            $product->product_images()->create(['path' => $imageName]);
-        }
-
-        DB::commit();
-        return back()->with('success', 'Produkt dodany!');
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return back()->with('error', 'Błąd zapisu: ' . $e->getMessage());
-    }
-}
 }
