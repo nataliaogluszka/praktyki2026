@@ -179,7 +179,7 @@
                                     </li>
                                 </ul>
                             </div>
-                            @can('isAdmin')
+                            @can('isInventory')
                             <a href="{{ route('logs.index') }}" class="btn btn-outline-light">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
                                     class="bi bi-bell-fill" viewBox="0 0 16 16">
