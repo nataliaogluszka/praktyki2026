@@ -12,18 +12,34 @@ class InventoryController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Product::with('inventories');
+        $status = $request->get('status');
 
-        if ($request->has('status') && $request->status != '') {
-            $query->whereHas('inventories', function ($q) use ($request) {
-                if ($request->status == 'brak') {
+        $query = Product::with(['inventories' => function ($q) use ($status) {
+            if ($status == 'brak') {
+                $q->where('quantity', 0);
+            } elseif ($status == 'ponizej20') {
+                $q->where('quantity', '<', 20);
+            } elseif ($status == '20-50') {
+                $q->whereBetween('quantity', [20, 50]);
+            } elseif ($status == '50-100') {
+                $q->whereBetween('quantity', [50, 100]);
+            } elseif ($status == 'powyzej100') {
+                $q->where('quantity', '>=', 100);
+            }
+        }]);
+
+        if ($status) {
+            $query->whereHas('inventories', function ($q) use ($status) {
+                if ($status == 'brak') {
                     $q->where('quantity', 0);
-                } elseif ($request->status == 'ponizej20') {
-                    $q->where('quantity', '<=', 20);
-                } elseif ($request->status == 'ponizej50') {
-                    $q->where('quantity', '<=', 50);
-                } elseif ($request->status == 'powyzej50') {
-                    $q->where('quantity', '>', 50);
+                } elseif ($status == 'ponizej20') {
+                    $q->where('quantity', '<', 20);
+                } elseif ($status == '20-50') {
+                    $q->whereBetween('quantity', [20, 50]);
+                } elseif ($status == '50-100') {
+                    $q->whereBetween('quantity', [50, 100]);
+                } elseif ($status == 'powyzej100') {
+                    $q->where('quantity', '>=', 100);
                 }
             });
         }
@@ -92,10 +108,10 @@ class InventoryController extends Controller
     }
 
     public function destroy($id)
-{
-    $inventory = Inventory::findOrFail($id);
-    $inventory->delete();
+    {
+        $inventory = Inventory::findOrFail($id);
+        $inventory->delete();
 
-    return redirect()->back()->with('success', 'Rozmiar został usunięty z magazynu.');
-}
+        return redirect()->back()->with('success', 'Rozmiar został usunięty z magazynu.');
+    }
 }

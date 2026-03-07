@@ -160,7 +160,7 @@ Route::delete('/orders/{id}', [OrderController::class, 'destroyAdmin'])->name('o
 
 Route::get('/logs', [LogController::class, 'index'])
     ->name('logs.index')
-    ->middleware(['auth', 'can:isAdmin']);
+    ->middleware(['auth', 'can:isInventory']);
 
 
 Route::middleware(['auth'])->group(function () {
