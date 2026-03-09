@@ -78,9 +78,7 @@ Route::get('/categories/show/{name}', [CategoryController::class, 'show'])->name
 
 Route::get('/categories/{gender}', [CategoryController::class, 'genderIndex'])->name('categories.gender');
 
-Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])
-    ->name('categories.destroy')
-    ->middleware(['auth', 'can:isAdmin']);
+Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy')->middleware(['auth', 'can:isAdmin']);
 
 Route::patch('/inventory/update', [InventoryController::class, 'update'])->name('inventory.update');
 
@@ -158,9 +156,7 @@ Route::post('/checkout/repay/{order}', [CheckoutController::class, 'repay'])->na
 Route::delete('/orders/{id}', [OrderController::class, 'destroyAdmin'])->name('orders.destroyAdmin');
 
 
-Route::get('/logs', [LogController::class, 'index'])
-    ->name('logs.index')
-    ->middleware(['auth', 'can:isInventory']);
+Route::get('/logs', [LogController::class, 'index'])->name('logs.index')->middleware(['auth', 'can:isInventory']);
 
 
 Route::middleware(['auth'])->group(function () {
@@ -169,9 +165,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/returns/store', [ReturnController::class, 'store'])->name('returns.store');
 });
 
-Route::patch('/orders/{order}/confirm', [OrderController::class, 'confirmDelivery'])
-    ->name('orders.confirm_delivery')
-    ->middleware('auth');
+Route::patch('/orders/{order}/confirm', [OrderController::class, 'confirmDelivery'])->name('orders.confirm_delivery')->middleware('auth');
 
 Route::get('/returns/admin', [ReturnController::class, 'indexAdmin'])->name('returns.index')->middleware('can:isAdmin');
 Route::patch('/returns/{return}/status', [ReturnController::class, 'updateStatus'])->name('returns.update')->middleware('can:isAdmin');
