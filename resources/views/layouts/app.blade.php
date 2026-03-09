@@ -26,7 +26,7 @@
     }
 
     main {
-        min-height: 40vh;
+        min-height: 60vh;
     }
 
     .nav-item:hover>a {

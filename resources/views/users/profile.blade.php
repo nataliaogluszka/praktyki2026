@@ -46,7 +46,7 @@
                 </div>
             </div>
 
-            <div class="mb-5">
+            <!-- <div class="mb-3"> -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="fw-bold mb-0 text-secondary text-uppercase"
                         style="font-size: 0.85rem; letter-spacing: 1px;">Zgody Marketingowe</h4>
@@ -56,10 +56,10 @@
                         <form action="{{ route('profile.marketing.update') }}" method="POST">
                             @csrf
                             @method('PUT')
-                            
+
                             <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" name="newsletter" id="consent_newsletter" 
-                                    {{ $user->marketingConsents->newsletter ? 'checked' : '' }}>
+                                <input class="form-check-input" type="checkbox" name="newsletter"
+                                    id="consent_newsletter" {{ $user->marketingConsents->newsletter ? 'checked' : '' }}>
                                 <label class="form-check-label small" for="consent_newsletter">
                                     Chcę otrzymywać newsletter i informacje o promocjach e-mailem.
                                 </label>
@@ -74,7 +74,8 @@
                             </div>
 
                             <div class="form-check mb-4">
-                                <input class="form-check-input" type="checkbox" name="data_processing_third_party" id="consent_third_party"
+                                <input class="form-check-input" type="checkbox" name="data_processing_third_party"
+                                    id="consent_third_party"
                                     {{ $user->marketingConsents->data_processing_third_party ? 'checked' : '' }}>
                                 <label class="form-check-label small" for="consent_third_party">
                                     Wyrażam zgodę na przetwarzanie danych w celach analitycznych przez partnerów.
@@ -87,9 +88,59 @@
                         </form>
                     </div>
                 </div>
-            </div>
+            <!-- </div> -->
+        </div>
 
+        <div class="col-lg-7">
             <div class="mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0 text-secondary text-uppercase"
+                        style="font-size: 0.85rem; letter-spacing: 1px;">
+                        Ostatnie zamówienia</h4>
+                    <a class="btn btn-link text-decoration-none p-0 fw-bold"
+                        href="{{ route('orders.user.index', $user) }}">
+                        Wszystkie zamówienia</i>
+                    </a>
+                </div>
+
+                <div class="card border-1 shadow-sm rounded-4 overflow-hidden">
+                    <div class="list-group list-group-flush">
+                        @forelse($orders as $order)
+                        <div class="list-group-item p-4 border-0 border-bottom">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 mb-2 mb-md-0">
+                                    <span class="text-muted small d-block">ID Zamówienia</span>
+                                    <span class="fw-bold text-dark">#{{ $order->id }}</span>
+                                </div>
+                                <div class="col-md-3 mb-2 mb-md-0">
+                                    <span class="text-muted small d-block">Data</span>
+                                    <span class="text-dark">{{ $order->created_at->format('d.m.Y') }}</span>
+                                </div>
+                                <div class="col-md-3 mb-2 mb-md-0">
+                                    <span class="text-muted small d-block">Status</span>
+                                    <span
+                                        class="badge rounded-pill @if($order->status == 'Nieopłacone') bg-warning-subtle text-warning @elseif($order->status == 'Opłacone') bg-primary-subtle text-primary-emphasis @elseif($order->status == 'Wysłane') bg-success-subtle text-success @elseif($order->status == 'dostarczono') bg-secondary-subtle text-secondary @else bg-warning-subtle text-warning @endif">
+                                        {{ $order->status }}
+                                    </span>
+                                </div>
+                                <div class="col-md-2 text-md-end">
+                                    <span class="text-muted small d-block">Suma</span>
+                                    <span class="fw-bold text-primary">{{ number_format($order->total_price, 2) }}
+                                        {{ $order->currency }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        @empty
+                        <div class="p-5 text-center">
+                            <i class="bi bi-bag-x fs-1 text-muted d-block mb-3"></i>
+                            <p class="text-muted mb-0">Nie złożyłeś jeszcze żadnego zamówienia.</p>
+                            <a href="/home" class="btn btn-warning mt-3 fw-bold px-4">Zacznij zakupy</a>
+                        </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="mb-5"> -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="fw-bold mb-0 text-secondary text-uppercase"
                         style="font-size: 0.85rem; letter-spacing: 1px;">Zapisane Adresy</h4>
@@ -141,54 +192,7 @@
                     </div>
                     @endforelse
                 </div>
-            </div>
-        </div>
-
-        <div class="col-lg-7">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="fw-bold mb-0 text-secondary text-uppercase" style="font-size: 0.85rem; letter-spacing: 1px;">
-                    Ostatnie zamówienia</h4>
-                <a class="btn btn-link text-decoration-none p-0 fw-bold" href="{{ route('orders.user.index', $user) }}">
-                    Wszystkie zamówienia</i>
-                </a>
-            </div>
-
-            <div class="card border-1 shadow-sm rounded-4 overflow-hidden">
-                <div class="list-group list-group-flush">
-                    @forelse($orders as $order)
-                    <div class="list-group-item p-4 border-0 border-bottom">
-                        <div class="row align-items-center">
-                            <div class="col-md-4 mb-2 mb-md-0">
-                                <span class="text-muted small d-block">ID Zamówienia</span>
-                                <span class="fw-bold text-dark">#{{ $order->id }}</span>
-                            </div>
-                            <div class="col-md-3 mb-2 mb-md-0">
-                                <span class="text-muted small d-block">Data</span>
-                                <span class="text-dark">{{ $order->created_at->format('d.m.Y') }}</span>
-                            </div>
-                            <div class="col-md-3 mb-2 mb-md-0">
-                                <span class="text-muted small d-block">Status</span>
-                                <span
-                                    class="badge rounded-pill @if($order->status == 'Nieopłacone') bg-warning-subtle text-warning @elseif($order->status == 'Opłacone') bg-primary-subtle text-primary-emphasis @elseif($order->status == 'Wysłane') bg-success-subtle text-success @elseif($order->status == 'dostarczono') bg-secondary-subtle text-secondary @else bg-warning-subtle text-warning @endif">
-                                    {{ $order->status }}
-                                </span>
-                            </div>
-                            <div class="col-md-2 text-md-end">
-                                <span class="text-muted small d-block">Suma</span>
-                                <span class="fw-bold text-primary">{{ number_format($order->total_price, 2) }}
-                                    {{ $order->currency }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="p-5 text-center">
-                        <i class="bi bi-bag-x fs-1 text-muted d-block mb-3"></i>
-                        <p class="text-muted mb-0">Nie złożyłeś jeszcze żadnego zamówienia.</p>
-                        <a href="/home" class="btn btn-warning mt-3 fw-bold px-4">Zacznij zakupy</a>
-                    </div>
-                    @endforelse
-                </div>
-            </div>
+            <!-- </div> -->
         </div>
     </div>
 </div>

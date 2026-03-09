@@ -13,7 +13,7 @@ class ProfileController extends Controller
           /** @var \App\Models\User $user */
         $user = Auth::user();
         $addresses = $user->addresses;
-        $orders = $user->orders()->latest()->take(5)->get();
+        $orders = $user->orders()->latest()->take(3)->get();
 
         return view('profile', compact('user', 'addresses', 'orders'));
     }
