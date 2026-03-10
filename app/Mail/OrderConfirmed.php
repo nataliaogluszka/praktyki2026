@@ -30,13 +30,15 @@ class OrderConfirmed extends Mailable
 
     public function build()
     {
-        $template = Setting::get('mail_template_order');
+        return $this->subject('Potwierdzenie zamówienia nr ' . $this->order->number)
+                    ->view('emails.orders.confirmed');
+        // $template = Setting::get('mail_template_order');
     
-        return $this->subject('Potwierdzenie zamówienia')
-                ->html(Blade::render($template, [
-                    'customer_name' => $this->order->customer_name,
-                    'order_number' => $this->order->number
-                ]));
+        // return $this->subject('Potwierdzenie zamówienia')
+        //         ->html(Blade::render($template, [
+        //             'customer_name' => $this->order->customer_name,
+        //             'order_number' => $this->order->number
+        //         ]));
     }
 
     /**
