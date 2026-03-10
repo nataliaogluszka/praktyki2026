@@ -16,6 +16,8 @@ use App\Models\ShippingMethod;
 use App\Models\Inventory;
 use App\Models\User;
 use App\Observers\AuditObserver;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schema;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -44,19 +46,28 @@ class AppServiceProvider extends ServiceProvider
         Coupon::observe(AuditObserver::class);
         Category::observe(AuditObserver::class);
 
-        try {
+        // try {
         
-            $settings = Setting::whereIn('key', [
-                'payment_api_key', 
-                'payment_api_secret'
-            ])->pluck('value', 'key');
+        //     $settings = Setting::whereIn('key', [
+        //         'payment_api_key', 
+        //         'payment_api_secret'
+        //     ])->pluck('value', 'key');
 
-            if (isset($settings['payment_api_secret'])) {
-                config(['services.stripe.secret' => $settings['payment_api_secret']]);
-                config(['services.stripe.key' => $settings['payment_api_key'] ?? '']);
-            }
-        } catch (\Exception $e) {
+        //     if (isset($settings['payment_api_secret'])) {
+        //         config(['services.stripe.secret' => $settings['payment_api_secret']]);
+        //         config(['services.stripe.key' => $settings['payment_api_key'] ?? '']);
+        //     }
+        // } catch (\Exception $e) {
             
+        // }
+
+        if (Schema::hasTable('settings')) {
+            $settings = Setting::pluck('value', 'key')->all();
+
+            if (isset($settings['payment_api_key'])) {
+                Config::set('services.stripe.key', $settings['payment_api_key']);
+                Config::set('services.stripe.secret', $settings['payment_api_secret']);
+            }
         }
 
         $shopName = DB::table('settings')->where('key', 'shop_name')->value('value');

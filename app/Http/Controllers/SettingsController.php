@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ShippingMethod;
+use App\Models\EmailTemplate;
 use App\Models\Setting;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
@@ -13,10 +14,11 @@ class SettingsController extends Controller
     public function index()
     {
         $shippingMethods = ShippingMethod::all();
-    
+        $emailTemplates = EmailTemplate::all();
+
         $settings = Setting::pluck('value', 'key')->toArray();
 
-        return view('settings.index', compact('shippingMethods', 'settings'));
+        return view('settings.index', compact('shippingMethods', 'settings', 'emailTemplates'));
     }
 
     public function update(Request $request)

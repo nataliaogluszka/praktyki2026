@@ -14,8 +14,8 @@
         @method('PATCH')
 
         <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm h-100">
+            <div class="col-md-6">
+                <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <h4 class="mb-3">Sklep</h4>
 
@@ -77,10 +77,28 @@
                         </div>
                     </div>
                 </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h4 class="mb-3">Płatności (Bramka)</h4>
+                        <div class="mb-3">
+                            <label class="small fw-bold">Klucz API (Public)</label>
+                            <input type="text" name="payment_api_key" value="{{ $settings['payment_api_key'] ?? '' }}" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold">Klucz API (Secret)</label>
+                            <input type="password" name="payment_api_secret" value="{{ $settings['payment_api_secret'] ?? '' }}" class="form-control">
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="payment_test_mode" value="1"
+                                id="testMode" {{ ($settings['payment_test_mode'] ?? '0') == '1' ? 'checked' : '' }}>
+                            <label class="form-check-label small fw-bold" for="testMode">Tryb testowy (Sandbox)</label>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm h-100">
+            <div class="col-md-6">
+                <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="m-0">Dostawy</h4>
@@ -105,32 +123,6 @@
                         @endforeach
                     </div>
                 </div>
-            </div>
-
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h4 class="mb-3">Płatności (Bramka)</h4>
-                        <div class="mb-3">
-                            <label class="small fw-bold">Klucz API (Public)</label>
-                            <input type="text" name="payment_api_key" value="{{ $settings['payment_api_key'] ?? '' }}"
-                                class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="small fw-bold">Klucz API (Secret)</label>
-                            <input type="password" name="payment_api_secret"
-                                value="{{ $settings['payment_api_secret'] ?? '' }}" class="form-control">
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" name="payment_test_mode" value="1"
-                                id="testMode" {{ ($settings['payment_test_mode'] ?? '0') == '1' ? 'checked' : '' }}>
-                            <label class="form-check-label small fw-bold" for="testMode">Tryb testowy (Sandbox)</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 mb-4">
                 <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <h4 class="mb-3">Podatki</h4>
@@ -141,21 +133,24 @@
                         </div>
                     </div>
                 </div>
-                <div class="card shadow-sm">
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <!-- <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <h4 class="mb-3">E-mail</h4>
                         <div class="mb-3">
                             <label class="small fw-bold">Nadawca (E-mail)</label>
-                            <input type="email" name="mail_from_address"
-                                value="{{ $settings['mail_from_address'] ?? '' }}" class="form-control">
+                            <input type="email" name="mail_from_address" value="{{ $settings['mail_from_address'] ?? '' }}" class="form-control">
                         </div>
                         <div class="">
                             <label class="small fw-bold">Nazwa nadawcy</label>
-                            <input type="text" name="mail_from_name" value="{{ $settings['mail_from_name'] ?? '' }}"
-                                class="form-control">
+                            <input type="text" name="mail_from_name" value="{{ $settings['mail_from_name'] ?? '' }}" class="form-control">
                         </div>
                     </div>
-                </div>
+                </div> -->
+
+                
             </div>
         </div>
 

@@ -19,6 +19,12 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\ReturnController;
 use App\Models\Order;
 use App\Mail\OrderConfirmed;
+use App\Http\Controllers\EmailTemplateController;
+
+Route::post('/email-templates', [EmailTemplateController::class, 'store'])->name('email-templates.store');
+Route::get('/email-templates/{emailTemplate}/edit', [EmailTemplateController::class, 'edit'])->name('email-templates.edit');
+Route::patch('/email-templates/{emailTemplate}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
+Route::delete('/email-templates/{emailTemplate}', [EmailTemplateController::class, 'destroy'])->name('email-templates.destroy');
 
 Route::get('/mail-preview', function () {
     $order = Order::with('orderItems')->latest()->first(); 

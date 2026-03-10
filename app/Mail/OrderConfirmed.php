@@ -9,6 +9,8 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Order;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Blade;
 
 class OrderConfirmed extends Mailable
 {
@@ -28,8 +30,13 @@ class OrderConfirmed extends Mailable
 
     public function build()
     {
-        return $this->subject('Potwierdzenie zamówienia nr ' . $this->order->number)
-                    ->view('emails.orders.confirmed');
+        $template = Setting::get('mail_template_order');
+    
+        return $this->subject('Potwierdzenie zamówienia')
+                ->html(Blade::render($template, [
+                    'customer_name' => $this->order->customer_name,
+                    'order_number' => $this->order->number
+                ]));
     }
 
     /**
