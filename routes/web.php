@@ -17,6 +17,16 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\OpinionController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ReturnController;
+use App\Models\Order;
+use App\Mail\OrderConfirmed;
+
+Route::get('/mail-preview', function () {
+    $order = Order::with('orderItems')->latest()->first(); 
+    
+    if (!$order) return "Brak zamówień w bazie do podglądu.";
+    
+    return new OrderConfirmed($order);
+});
 
 
 Route::get('/about', function(){

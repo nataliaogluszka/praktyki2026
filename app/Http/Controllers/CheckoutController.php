@@ -180,6 +180,13 @@ class CheckoutController extends Controller
 
             DB::commit();
             session()->forget(['cart', 'coupon']);
+
+            try {
+                \Illuminate\Support\Facades\Mail::to($request->email)->send(new \App\Mail\OrderConfirmed($order));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Błąd wysyłki maila: " . $e->getMessage());
+            }
+
             return view('checkout.thanks', compact('order'));
 
         } catch (\Exception $e) {
@@ -200,6 +207,15 @@ class CheckoutController extends Controller
                 'is_paid' => true,
                 'status' => 'Opłacone'
             ]);
+        }
+
+        try {
+            $customerEmail = $session->customer_details->email ?? $order->user->email ?? null;
+            if ($customerEmail) {
+                \Illuminate\Support\Facades\Mail::to($customerEmail)->send(new \App\Mail\OrderConfirmed($order));
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Błąd wysyłki maila po płatności: " . $e->getMessage());
         }
 
         return view('checkout.thanks', compact('order'));
