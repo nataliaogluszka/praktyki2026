@@ -130,10 +130,8 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" href="{{ route('users.profile') }}">Mój profil</a></li>
-                                    <li><a class="dropdown-item"
-                                            href="{{ route('orders.user.index', Auth::user()) }}">Zamówienia</a></li>
-                                    <li><a class="dropdown-item"
-                                            href="{{ route('returns.user.index', Auth::user()) }}">Zwroty</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('orders.user.index', Auth::user()) }}">Zamówienia</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('returns.user.index', Auth::user()) }}">Zwroty</a></li>
 
                                     @can('isAdmin')
                                     <li>
@@ -141,29 +139,25 @@
                                     </li>
                                     <li><a class="dropdown-item" href="/users/list">Użytkownicy</a></li>
                                     <li><a class="dropdown-item" href="{{ route('products.index') }}">Produkty</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('categories.index') }}">Kategorie</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ route('coupons.index') }}">Kody rabatowe</a>
-                                    </li>
+                                    <li><a class="dropdown-item" href="{{ route('categories.index') }}">Kategorie</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('coupons.index') }}">Kody rabatowe</a></li>
                                     @endcan
 
                                     @can('isInventory')
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="{{ route('orders.index') }}">Wszystkie
-                                            zamówienia</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('returns.index') }}">Wszystkie
-                                            zwroty</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('inventories.index') }}">Magazyn</a>
-                                    </li>
+                                    <li><a class="dropdown-item" href="{{ route('inventories.index') }}">Magazyn</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('orders.index') }}">Zamówienia</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('returns.index') }}">Zwroty</a></li>
                                     @endcan
 
                                     @can('isAdmin')
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="/settings">Ustawienia sklepu</a></li>
+                                    <li><a class="dropdown-item text-muted" href="{{ route('logs.index') }}#l">Logi</a></li>
+                                    <li><a class="dropdown-item text-muted" href="/settings">Ustawienia sklepu</a></li>
                                     @endcan
 
                                     <li>
@@ -187,6 +181,7 @@
                                         d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901">
                                     </path>
                                 </svg>
+                                <!-- <img src="{{ asset('file-info-svgrepo-com.png') }}" height="22" width="22" fill="currentColor"> -->
                             </a>
                             @endcan
                             @endguest
@@ -206,26 +201,32 @@
             <div class="container text-center text-md-start">
                 <div class="row text-center text-md-start">
                     <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                        <h5 class="text-uppercase mb-4 font-weight-bold text-warning">{{ $shopName }}</h5>
-                        <p>Zapewniamy najwyższą jakość produktów sportowych od 2024 roku. Twoja pasja to nasza misja.
-                        </p>
+                        <h5 class="text-uppercase mb-4 fw-b text-warning">{{ $shopName }}</h5>
+                        <div class="px-1">
+                            <p>Zapewniamy najwyższą jakość produktów sportowych od 2024 roku. Twoja pasja to nasza
+                                misja.</p>
+                        </div>
                     </div>
 
                     <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
-                        <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Sklep</h5>
-                        <p><a href="/home" class="text-light text-decoration-none">Wszystkie produkty</a></p>
-                        <p><a href="{{ route('categories.gender', 'mezczyzna') }}"
-                                class="text-light text-decoration-none">Mężczyzna</a></p>
-                        <p><a href="{{ route('categories.gender', 'kobieta') }}"
-                                class="text-light text-decoration-none">Kobieta</a></p>
-                        <p><a href="/" class="text-light text-decoration-none">Nowości</a></p>
+                        <h5 class="text-uppercase mb-4 fw-b text-warning">Sklep</h5>
+                        <div class="px-1">
+                            <p><a href="/home" class="text-light text-decoration-none">Wszystkie produkty</a></p>
+                            <p><a href="{{ route('categories.gender', 'mezczyzna') }}"
+                                    class="text-light text-decoration-none">Mężczyzna</a></p>
+                            <p><a href="{{ route('categories.gender', 'kobieta') }}"
+                                    class="text-light text-decoration-none">Kobieta</a></p>
+                            <p><a href="/" class="text-light text-decoration-none">Nowości</a></p>
+                        </div>
                     </div>
 
                     <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
-                        <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Kontakt</h5>
-                        <p><i class="bi bi-house-door-fill me-2"></i> Łódź, Polska</p>
-                        <p><i class="bi bi-envelope-fill me-2"></i> kontakt@twojsklep.pl</p>
-                        <p><i class="bi bi-telephone-fill me-2"></i> +48 123 456 789</p>
+                        <h5 class="text-uppercase mb-4 fw-b text-warning">Kontakt</h5>
+                        <div class="px-1">
+                            <p>Łódź, Polska</p>
+                            <p>info@sklep16022026.pl</p>
+                            <p>+48 123 456 789</p>
+                        </div>
                     </div>
                 </div>
 

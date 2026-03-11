@@ -52,10 +52,12 @@ class InventoryController extends Controller
             } elseif (in_array($request->sort, ['majniej', 'najwiecej'])) {
                 $direction = $request->sort == 'majniej' ? 'asc' : 'desc';
                 
-                $query->leftJoin('inventories', 'products.id', '=', 'inventories.product_id')
-                    ->select('products.*', DB::raw('SUM(inventories.quantity) as total_qty'))
-                    ->groupBy('products.id')
-                    ->orderBy('total_qty', $direction);
+                // $query->leftJoin('inventories', 'products.id', '=', 'inventories.product_id')
+                //     ->select('products.*', DB::raw('SUM(inventories.quantity) as total_qty'))
+                //     ->groupBy('products.id')
+                //     ->orderBy('total_qty', $direction);
+                $query->withSum('inventories', 'quantity')
+                  ->orderBy('inventories_sum_quantity', $direction);
             }
         }
 

@@ -6,13 +6,13 @@
     @if(isset($lowStockItems) && $lowStockItems->count() > 0)
         <div class="row mb-4">
             <div class="col-12">
-                <div class="alert alert-warning border-0 shadow-sm rounded-4 p-3">
+                <div class="alert border-0 shadow-sm rounded-4 p-3">
                     <div class="d-flex align-items-center mb-2">
-                        <h5 class="alert-heading mb-0 fw-bold">Uwaga: Niski stan magazynowy!</h5>
+                        <h5 class="alert-heading text-warning mb-2 fw-bold">Uwaga: Niski stan magazynowy!</h5>
                     </div>
                     <ul class="mb-0 small">
-                        @foreach($lowStockItems as $item)
-                            <li class="lh-lg">
+                        @foreach($lowStockItems->sortBy('quantity') as $item)
+                            <li class="my-3">
                                 <strong>{{ $item->product->name }}</strong> 
                                 (Rozmiar: {{ $item->size }}) - 
                                 <span class="badge {{ $item->quantity <= 20 ? 'bg-danger' : ($item->quantity < 50 ? 'bg-warning text-dark' : '') }}">
@@ -30,7 +30,7 @@
         </div>
     @endif
 
-    <!-- <div class="row mb-4">
+    <div class="row mb-4">
         <div class="col-12 d-flex justify-content-between align-items-center">
             <h4 class="fw-bold text-secondary text-uppercase mb-0" style="font-size: 0.85rem; letter-spacing: 1px;">
                 Panel Administratora
@@ -43,10 +43,10 @@
                 <i class="bi bi-journal-text me-2"></i> Pokaż / Ukryj Logi Systemowe
             </button>
         </div>
-    </div> -->
+    </div>
 
     @can('isAdmin')
-    <!-- <div class="collapse {{ $errors->any() ? 'show' : '' }}" id="collapseLogs"> -->
+    <div class="collapse {{ $errors->any() ? 'show' : '' }}" id="collapseLogs">
         <div class="card shadow-sm rounded-4 overflow-hidden mb-5">
             <div class="card-header bg-white py-3 border-bottom-0">
                 <h6 class="mb-0 fw-bold text-dark">Dziennik Aktywności Systemu</h6>
@@ -114,22 +114,46 @@
                 </table>
             </div>
             @if($logs->hasPages())
-            <div class="card-footer bg-white py-3">
+            <div class="card-footer bg-white py-3 d-flex justify-content-center">
                 {{ $logs->links() }}
             </div>
             @endif
         </div>
-    <!-- </div> -->
+    </div>
     @endcan
 </div>
 
 <style>
 .extra-small { font-size: 0.7rem; }
 .table thead th { font-size: 0.75rem; letter-spacing: 0.5px; }
-/* Styl dla alertu */
-.alert-warning {
-    background-color: #fff8e1;
+.alert {
+    /* background-color: #fff8e1; */
     border-left: 5px solid #ffc107 !important;
 }
 </style>
+
+<script>
+    window.addEventListener('load', function () {
+        if (window.location.hash === '#l') {
+            const collapseElement = document.getElementById('collapseLogs');
+            
+            if (collapseElement) {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+                    const bsCollapse = new bootstrap.Collapse(collapseElement, {
+                        toggle: false
+                    });
+                    bsCollapse.show();
+                } else {
+                    collapseElement.classList.add('show');
+                    const btn = document.querySelector('[data-bs-target="#collapseLogs"]');
+                    if (btn) btn.setAttribute('aria-expanded', 'true');
+                }
+
+                setTimeout(() => {
+                    collapseElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
+        }
+    });
+</script>
 @endsection
